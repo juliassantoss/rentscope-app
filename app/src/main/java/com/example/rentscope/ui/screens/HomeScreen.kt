@@ -71,7 +71,6 @@ fun HomeScreen(
 
         Spacer(Modifier.height(22.dp))
 
-        // Card principal
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(18.dp),
@@ -120,7 +119,10 @@ fun HomeScreen(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
                 ContinentChip(
                     text = "Europa",
                     selected = selectedContinent == "Europa",
@@ -135,7 +137,10 @@ fun HomeScreen(
                 )
             }
 
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
                 ContinentChip(
                     text = "Américas",
                     selected = selectedContinent == "Américas",
@@ -150,7 +155,10 @@ fun HomeScreen(
                 )
             }
 
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
                 ContinentChip(
                     text = "Oceania",
                     selected = selectedContinent == "Oceania",

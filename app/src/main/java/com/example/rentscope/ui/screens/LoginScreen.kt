@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -32,6 +33,8 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun LoginScreen(
     padding: PaddingValues,
+    isLoading: Boolean = false,
+    errorMessage: String? = null,
     onForgotPasswordClick: () -> Unit = {},
     onCreateAccountClick: () -> Unit = {},
     onLoginClick: (email: String, password: String) -> Unit = { _, _ -> }
@@ -70,6 +73,7 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth(),
             label = { Text("E-mail") },
             singleLine = true,
+            enabled = !isLoading,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next
@@ -84,15 +88,28 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth(),
             label = { Text("Senha") },
             singleLine = true,
+            enabled = !isLoading,
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(
-                onDone = { onLoginClick(email.trim(), password) }
+                onDone = {
+                    onLoginClick(email.trim(), password)
+                }
             )
         )
+
+        if (!errorMessage.isNullOrBlank()) {
+            Spacer(Modifier.height(12.dp))
+            Text(
+                text = errorMessage,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
 
         Spacer(Modifier.height(8.dp))
 
@@ -104,7 +121,7 @@ fun LoginScreen(
                 text = "Esqueceu sua senha?",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.clickable { onForgotPasswordClick() }
+                modifier = Modifier.clickable(enabled = !isLoading) { onForgotPasswordClick() }
             )
         }
 
@@ -112,9 +129,14 @@ fun LoginScreen(
 
         Button(
             onClick = { onLoginClick(email.trim(), password) },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !isLoading
         ) {
-            Text("Entrar", fontWeight = FontWeight.SemiBold)
+            if (isLoading) {
+                CircularProgressIndicator()
+            } else {
+                Text("Entrar", fontWeight = FontWeight.SemiBold)
+            }
         }
 
         Spacer(Modifier.height(18.dp))
@@ -131,7 +153,7 @@ fun LoginScreen(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.clickable { onCreateAccountClick() }
+                modifier = Modifier.clickable(enabled = !isLoading) { onCreateAccountClick() }
             )
         }
     }

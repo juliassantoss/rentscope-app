@@ -37,13 +37,13 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun AppDrawer(
+    isLoggedIn: Boolean,
+    userEmail: String?,
     onClose: () -> Unit,
-    onLoginClick: () -> Unit,
+    onAuthClick: () -> Unit,
     onItemClick: (String) -> Unit
 ) {
     ModalDrawerSheet {
-
-        // Header azul
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -58,7 +58,6 @@ fun AppDrawer(
                 .padding(20.dp)
         ) {
             Column {
-
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -90,23 +89,26 @@ fun AppDrawer(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "Bem-vindo",
+                    text = if (isLoggedIn) "Sessão iniciada" else "Bem-vindo",
                     color = Color.White,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
 
                 Text(
-                    text = "Explore o mundo com RentScope",
+                    text = if (isLoggedIn && !userEmail.isNullOrBlank()) {
+                        userEmail
+                    } else {
+                        "Explore o mundo com RentScope"
+                    },
                     color = Color.White.copy(alpha = 0.9f)
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // ✅ O "por menor" que tu pediu:
-                TextButton(onClick = onLoginClick) {
+                TextButton(onClick = onAuthClick) {
                     Text(
-                        text = "Fazer login",
+                        text = if (isLoggedIn) "Terminar sessão" else "Fazer login",
                         color = Color.White,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -114,40 +116,39 @@ fun AppDrawer(
             }
         }
 
-        // Itens
         NavigationDrawerItem(
             label = { Text("Favoritos") },
             selected = false,
-            onClick = { onItemClick("favoritos") },
-            icon = { Icon(Icons.Default.StarBorder, null) }
+            onClick = { onItemClick(Routes.FAVORITES) },
+            icon = { Icon(Icons.Default.StarBorder, contentDescription = null) }
         )
 
         NavigationDrawerItem(
-            label = { Text("Histórico de Preços") },
+            label = { Text("Histórico de Pesquisas") },
             selected = false,
-            onClick = { onItemClick("historico") },
-            icon = { Icon(Icons.Default.AccessTime, null) }
+            onClick = { onItemClick(Routes.HISTORY) },
+            icon = { Icon(Icons.Default.AccessTime, contentDescription = null) }
         )
 
         NavigationDrawerItem(
             label = { Text("Países Disponíveis") },
             selected = false,
-            onClick = { onItemClick("paises") },
-            icon = { Icon(Icons.Default.LocationOn, null) }
+            onClick = { onItemClick(Routes.HOME) },
+            icon = { Icon(Icons.Default.LocationOn, contentDescription = null) }
         )
 
         NavigationDrawerItem(
             label = { Text("Comparar Regiões") },
             selected = false,
-            onClick = { onItemClick("comparar") },
-            icon = { Icon(Icons.Default.TrendingUp, null) }
+            onClick = { onItemClick(Routes.RESULTS) },
+            icon = { Icon(Icons.Default.TrendingUp, contentDescription = null) }
         )
 
         NavigationDrawerItem(
             label = { Text("Configurações") },
             selected = false,
-            onClick = { onItemClick("config") },
-            icon = { Icon(Icons.Default.Settings, null) }
+            onClick = { onItemClick(Routes.LANGUAGE) },
+            icon = { Icon(Icons.Default.Settings, contentDescription = null) }
         )
 
         Spacer(modifier = Modifier.weight(1f))

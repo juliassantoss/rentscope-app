@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -33,10 +34,15 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun NewAccountScreen(
     padding: PaddingValues,
+    isLoading: Boolean = false,
+    errorMessage: String? = null,
     onBackToLoginClick: () -> Unit = {},
-    onCreateAccountClick: (name: String, email: String, password: String) -> Unit = { _, _, _ -> }
+    onCreateAccountClick: (
+        email: String,
+        password: String,
+        confirmPassword: String
+    ) -> Unit = { _, _, _ -> }
 ) {
-    var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
@@ -70,24 +76,12 @@ fun NewAccountScreen(
         Spacer(Modifier.height(20.dp))
 
         OutlinedTextField(
-            value = name,
-            onValueChange = { name = it },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text("Nome") },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Next
-            )
-        )
-
-        Spacer(Modifier.height(12.dp))
-
-        OutlinedTextField(
             value = email,
             onValueChange = { email = it },
             modifier = Modifier.fillMaxWidth(),
             label = { Text("E-mail") },
             singleLine = true,
+            enabled = !isLoading,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next
@@ -102,6 +96,7 @@ fun NewAccountScreen(
             modifier = Modifier.fillMaxWidth(),
             label = { Text("Senha") },
             singleLine = true,
+            enabled = !isLoading,
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
@@ -117,6 +112,7 @@ fun NewAccountScreen(
             modifier = Modifier.fillMaxWidth(),
             label = { Text("Confirmar senha") },
             singleLine = true,
+            enabled = !isLoading,
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
@@ -124,14 +120,35 @@ fun NewAccountScreen(
             )
         )
 
+        if (!errorMessage.isNullOrBlank()) {
+            Spacer(Modifier.height(12.dp))
+            Text(
+                text = errorMessage,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
         Spacer(Modifier.height(16.dp))
 
         Button(
-            onClick = { onCreateAccountClick(name.trim(), email.trim(), password) },
+            onClick = {
+                onCreateAccountClick(
+                    email.trim(),
+                    password,
+                    confirmPassword
+                )
+            },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(14.dp)
+            shape = RoundedCornerShape(14.dp),
+            enabled = !isLoading
         ) {
-            Text("Criar conta", fontWeight = FontWeight.SemiBold)
+            if (isLoading) {
+                CircularProgressIndicator()
+            } else {
+                Text("Criar conta", fontWeight = FontWeight.SemiBold)
+            }
         }
 
         Spacer(Modifier.height(18.dp))
@@ -142,7 +159,7 @@ fun NewAccountScreen(
                 text = "Entrar",
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.clickable { onBackToLoginClick() }
+                modifier = Modifier.clickable(enabled = !isLoading) { onBackToLoginClick() }
             )
         }
 

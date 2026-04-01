@@ -1,12 +1,9 @@
 package com.example.rentscope.ui.screens
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,49 +14,47 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import kotlin.math.roundToInt
-
-private val BrandBlue = Color(0xFF2F86D6)
 
 @Composable
 fun FiltersScreen(
     padding: PaddingValues,
     countryCode: String,
     countryName: String,
-    onSaveClick: () -> Unit
+    initialRendaMin: Float = 0f,
+    initialRendaMax: Float = 15f,
+    initialPesoRenda: Float = 1f,
+    initialPesoEscolas: Float = 1f,
+    initialPesoHospitais: Float = 1f,
+    initialPesoCriminalidade: Float = 1f,
+    onSaveClick: (
+        rendaMin: Float,
+        rendaMax: Float,
+        pesoRenda: Float,
+        pesoEscolas: Float,
+        pesoHospitais: Float,
+        pesoCriminalidade: Float
+    ) -> Unit
 ) {
-    // ===== States (interativos) =====
-    var pricePerM2 by remember { mutableFloatStateOf(1200f) } // exemplo
-    var minM2 by remember { mutableFloatStateOf(50f) }        // exemplo
-    val totalValue = (pricePerM2 * minM2).roundToInt()
+    var rendaMin by remember { mutableFloatStateOf(initialRendaMin) }
+    var rendaMax by remember { mutableFloatStateOf(initialRendaMax) }
 
-    var museums by remember { mutableStateOf(false) }
-    var artGalleries by remember { mutableStateOf(false) }
-    var libraries by remember { mutableStateOf(false) }
-    var hospitals by remember { mutableStateOf(false) }
-    var schools by remember { mutableStateOf(false) }
+    var pesoRenda by remember { mutableFloatStateOf(initialPesoRenda) }
+    var pesoEscolas by remember { mutableFloatStateOf(initialPesoEscolas) }
+    var pesoHospitais by remember { mutableFloatStateOf(initialPesoHospitais) }
+    var pesoCriminalidade by remember { mutableFloatStateOf(initialPesoCriminalidade) }
 
-    var crimeRate by remember { mutableFloatStateOf(40f) } // 0..100
-
-    // ✅ Scroll pra conseguir ver tudo
     val scrollState = rememberScrollState()
 
     Column(
@@ -74,33 +69,96 @@ fun FiltersScreen(
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
-        Spacer(Modifier.height(12.dp))
-
-        // ===== Preço por m² =====
-        SliderCard(
-            title = "Preço por m²",
-            valueText = "${pricePerM2.roundToInt()}",
-            subtitle = "Ajuste o preço médio por m² (placeholder)",
-            value = pricePerM2,
-            onValueChange = { pricePerM2 = it },
-            range = 0f..3000f
-        )
 
         Spacer(Modifier.height(12.dp))
 
-        // ===== Número mínimo de m² =====
-        SliderCard(
-            title = "Número mínimo de m²",
-            valueText = "${minM2.roundToInt()} m²",
-            subtitle = "Ajuste o mínimo de m² (placeholder)",
-            value = minM2,
-            onValueChange = { minM2 = it },
-            range = 0f..300f
+        Text(
+            text = "Todos os municípios continuam no mapa. Os filtros e pesos servem para ajustar o grau de adequação de cada um.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
         Spacer(Modifier.height(16.dp))
 
-        // ===== Valor total =====
+        SliderCard(
+            title = "Renda mínima (€ / m²)",
+            valueText = String.format("%.1f", rendaMin),
+            subtitle = "Valor mínimo desejado para o arrendamento médio por m².",
+            value = rendaMin,
+            onValueChange = {
+                rendaMin = it
+                if (rendaMax < it) rendaMax = it
+            },
+            range = 0f..20f
+        )
+
+        Spacer(Modifier.height(12.dp))
+
+        SliderCard(
+            title = "Renda máxima (€ / m²)",
+            valueText = String.format("%.1f", rendaMax),
+            subtitle = "Valor máximo desejado para o arrendamento médio por m².",
+            value = rendaMax,
+            onValueChange = {
+                rendaMax = it.coerceAtLeast(rendaMin)
+            },
+            range = 0f..20f
+        )
+
+        Spacer(Modifier.height(18.dp))
+
+        Text(
+            text = "Importância de cada critério",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(Modifier.height(10.dp))
+
+        SliderCard(
+            title = "Peso da renda",
+            valueText = String.format("%.1f", pesoRenda),
+            subtitle = "Quanto maior, mais o score valoriza municípios com renda próxima do intervalo desejado.",
+            value = pesoRenda,
+            onValueChange = { pesoRenda = it },
+            range = 0f..3f
+        )
+
+        Spacer(Modifier.height(12.dp))
+
+        SliderCard(
+            title = "Peso das escolas",
+            valueText = String.format("%.1f", pesoEscolas),
+            subtitle = "Quanto maior, mais o score valoriza a oferta de escolas.",
+            value = pesoEscolas,
+            onValueChange = { pesoEscolas = it },
+            range = 0f..3f
+        )
+
+        Spacer(Modifier.height(12.dp))
+
+        SliderCard(
+            title = "Peso dos hospitais",
+            valueText = String.format("%.1f", pesoHospitais),
+            subtitle = "Quanto maior, mais o score valoriza a oferta de hospitais.",
+            value = pesoHospitais,
+            onValueChange = { pesoHospitais = it },
+            range = 0f..3f
+        )
+
+        Spacer(Modifier.height(12.dp))
+
+        SliderCard(
+            title = "Peso da criminalidade",
+            valueText = String.format("%.1f", pesoCriminalidade),
+            subtitle = "Quanto maior, mais o score penaliza municípios com maior criminalidade.",
+            value = pesoCriminalidade,
+            onValueChange = { pesoCriminalidade = it },
+            range = 0f..3f
+        )
+
+        Spacer(Modifier.height(18.dp))
+
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(14.dp),
@@ -108,82 +166,45 @@ fun FiltersScreen(
         ) {
             Column(Modifier.padding(14.dp)) {
                 Text(
-                    text = "Valor total",
+                    text = "Resumo dos filtros",
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold
                 )
+
                 Spacer(Modifier.height(8.dp))
 
                 Text(
-                    text = "$totalValue (preço/m² × m²)",
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    text = "Renda desejada: ${String.format("%.1f", rendaMin)} até ${String.format("%.1f", rendaMax)} €/m²",
+                    style = MaterialTheme.typography.bodyMedium
                 )
 
-                Spacer(Modifier.height(6.dp))
+                Spacer(Modifier.height(4.dp))
 
                 Text(
-                    text = "Resultado automático só pra UI (depois tu troca pelo cálculo real/€).",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    text = "Pesos — Renda: ${String.format("%.1f", pesoRenda)} | Escolas: ${String.format("%.1f", pesoEscolas)} | Hospitais: ${String.format("%.1f", pesoHospitais)} | Criminalidade: ${String.format("%.1f", pesoCriminalidade)}",
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
         }
-
-        Spacer(Modifier.height(18.dp))
-
-        // ===== Lazer e utilidades =====
-        Text(
-            text = "Lazer e utilidades",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(Modifier.height(10.dp))
-
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(14.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-        ) {
-            Column(Modifier.padding(vertical = 6.dp)) {
-                CheckRow(label = "Museus", checked = museums, onCheckedChange = { museums = it })
-                DividerSoft()
-                CheckRow(label = "Galerias de arte", checked = artGalleries, onCheckedChange = { artGalleries = it })
-                DividerSoft()
-                CheckRow(label = "Bibliotecas", checked = libraries, onCheckedChange = { libraries = it })
-                DividerSoft()
-                CheckRow(label = "Hospitais", checked = hospitals, onCheckedChange = { hospitals = it })
-                DividerSoft()
-                CheckRow(label = "Escolas", checked = schools, onCheckedChange = { schools = it })
-            }
-        }
-
-        Spacer(Modifier.height(18.dp))
-
-        // ===== Taxa de criminalidade =====
-        Text(
-            text = "Taxa de criminalidade",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(Modifier.height(10.dp))
-
-        CrimeCard(
-            value = crimeRate,
-            onValueChange = { crimeRate = it }
-        )
 
         Spacer(Modifier.height(20.dp))
 
-        // ✅ Botão Salvar (volta para MapScreen)
         Button(
-            onClick = onSaveClick,
+            onClick = {
+                onSaveClick(
+                    rendaMin,
+                    rendaMax,
+                    pesoRenda,
+                    pesoEscolas,
+                    pesoHospitais,
+                    pesoCriminalidade
+                )
+            },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(14.dp)
         ) {
             Text(
-                text = "Salvar",
+                text = "Aplicar filtros",
                 fontWeight = FontWeight.SemiBold
             )
         }
@@ -239,125 +260,6 @@ private fun SliderCard(
                 onValueChange = onValueChange,
                 valueRange = range
             )
-        }
-    }
-}
-
-@Composable
-private fun CheckRow(
-    label: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 14.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = label,
-            modifier = Modifier.weight(1f),
-            style = MaterialTheme.typography.bodyLarge
-        )
-        Checkbox(
-            checked = checked,
-            onCheckedChange = onCheckedChange
-        )
-    }
-}
-
-@Composable
-private fun DividerSoft() {
-    HorizontalDivider(
-        color = Color(0xFFE6E9EE),
-        modifier = Modifier.padding(horizontal = 14.dp)
-    )
-}
-
-@Composable
-private fun CrimeCard(
-    value: Float,                 // 0..100
-    onValueChange: (Float) -> Unit
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(14.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-    ) {
-        Column(Modifier.padding(14.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Indicador (0–100)",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.weight(1f)
-                )
-                Text(
-                    text = value.roundToInt().toString(),
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-
-            Spacer(Modifier.height(10.dp))
-
-            ColumnChartBar(value = value)
-
-            Spacer(Modifier.height(12.dp))
-
-            Slider(
-                value = value,
-                onValueChange = onValueChange,
-                valueRange = 0f..100f
-            )
-        }
-    }
-}
-
-@Composable
-private fun ColumnChartBar(value: Float) {
-    val bars = remember(value) {
-        val t = value / 100f // 0..1
-        List(10) { i ->
-            val base = (i + 1) / 10f
-            (0.15f + 0.85f * (0.6f * base + 0.4f * t)).coerceIn(0.12f, 1f)
-        }
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp)
-            .clip(RoundedCornerShape(14.dp))
-            .background(Color(0xFFE9EEF5))
-            .padding(horizontal = 12.dp),
-        contentAlignment = Alignment.BottomStart
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.Bottom
-        ) {
-            bars.forEach { h ->
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 3.dp)
-                        .fillMaxHeight(h)
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(
-                            Brush.verticalGradient(
-                                listOf(
-                                    BrandBlue.copy(alpha = 0.30f),
-                                    BrandBlue
-                                )
-                            )
-                        )
-                )
-            }
         }
     }
 }
