@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">RentScope</string>
     <string name="app_title">RentScope</string>
-    <string name="google_maps_api_key">AIzaSyCmh-Jr0Spsd05sGh1gxzV9oOTFhFN4EvE</string>
 
     <!-- Navigation / Drawer / Footer -->
     <string name="back">Back</string>
