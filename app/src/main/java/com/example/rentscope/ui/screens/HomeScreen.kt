@@ -259,6 +259,7 @@ private fun ContinentChip(
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium
             )
+
         }
     }
 }

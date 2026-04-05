@@ -2,6 +2,8 @@ package com.example.rentscope.data.remote
 
 import com.example.rentscope.data.remote.dto.MunicipioDto
 import com.example.rentscope.data.remote.dto.PaisDto
+import com.example.rentscope.data.remote.dto.ai.AiQuestionRequest
+import com.example.rentscope.data.remote.dto.ai.AiQuestionResponse
 import com.example.rentscope.data.remote.dto.auth.LoginRequestDto
 import com.example.rentscope.data.remote.dto.auth.RegisterRequestDto
 import com.example.rentscope.data.remote.dto.auth.TokenResponseDto
@@ -76,4 +78,9 @@ interface RentScopeApi {
     suspend fun getHistoricoRenda(
         @Query("codigo_municipio") codigo: Int
     ): Response<List<PriceHistoryDto>>
+
+    @POST("ai/pergunta")
+    suspend fun perguntarIa(
+        @Body request: AiQuestionRequest
+    ): Response<AiQuestionResponse>
 }
