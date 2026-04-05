@@ -145,6 +145,13 @@ fun AppDrawer(
             icon = { Icon(Icons.Default.ShowChart, contentDescription = null) }
         )
 
+        NavigationDrawerItem(
+            label = { Text("Assistente IA") },
+            selected = false,
+            onClick = { onItemClick(Routes.AI_ASSISTANT) },
+            icon = { Icon(Icons.Default.ShowChart, contentDescription = null) }
+        )
+
         Spacer(modifier = Modifier.weight(1f))
 
         Divider()

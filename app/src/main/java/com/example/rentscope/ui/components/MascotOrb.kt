@@ -38,23 +38,104 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
+enum class MascotState {
+    IDLE,
+    THINKING,
+    SPEAKING,
+    ERROR
+}
+
 @Composable
 fun MascotOrb(
     modifier: Modifier = Modifier,
     orbSize: Dp = 180.dp,
-    followStrength: Float = 14f
+    followStrength: Float = 14f,
+    state: MascotState = MascotState.IDLE
 ) {
     val density = LocalDensity.current
     var touchPoint by remember { mutableStateOf<Offset?>(null) }
 
+    val floatDuration = when (state) {
+        MascotState.IDLE -> 2200
+        MascotState.THINKING -> 900
+        MascotState.SPEAKING -> 1400
+        MascotState.ERROR -> 700
+    }
+
+    val glowDuration = when (state) {
+        MascotState.IDLE -> 1800
+        MascotState.THINKING -> 700
+        MascotState.SPEAKING -> 1000
+        MascotState.ERROR -> 600
+    }
+
+    val floatAmplitude = when (state) {
+        MascotState.IDLE -> 6f
+        MascotState.THINKING -> 10f
+        MascotState.SPEAKING -> 8f
+        MascotState.ERROR -> 4f
+    }
+
+    val orbColors = when (state) {
+        MascotState.IDLE -> listOf(
+            Color(0xFF2A7BFF),
+            Color(0xFF0E4BEF),
+            Color(0xFF02152D)
+        )
+
+        MascotState.THINKING -> listOf(
+            Color(0xFF5B8CFF),
+            Color(0xFF3B5BDB),
+            Color(0xFF081B4B)
+        )
+
+        MascotState.SPEAKING -> listOf(
+            Color(0xFF4CC9F0),
+            Color(0xFF4361EE),
+            Color(0xFF14213D)
+        )
+
+        MascotState.ERROR -> listOf(
+            Color(0xFFFF6B6B),
+            Color(0xFFE63946),
+            Color(0xFF3A0D13)
+        )
+    }
+
+    val glowColors = when (state) {
+        MascotState.IDLE -> listOf(
+            Color(0xAA7A00FF),
+            Color(0x33006BFF),
+            Color.Transparent
+        )
+
+        MascotState.THINKING -> listOf(
+            Color(0xAA6C63FF),
+            Color(0x334361EE),
+            Color.Transparent
+        )
+
+        MascotState.SPEAKING -> listOf(
+            Color(0xAA00B4D8),
+            Color(0x334361EE),
+            Color.Transparent
+        )
+
+        MascotState.ERROR -> listOf(
+            Color(0xAAFF4D6D),
+            Color(0x33E63946),
+            Color.Transparent
+        )
+    }
+
     val transition = rememberInfiniteTransition(label = "mascot_orb")
 
     val floatY by transition.animateFloat(
-        initialValue = -6f,
-        targetValue = 6f,
+        initialValue = -floatAmplitude,
+        targetValue = floatAmplitude,
         animationSpec = infiniteRepeatable(
             animation = tween(
-                durationMillis = 2200,
+                durationMillis = floatDuration,
                 easing = FastOutSlowInEasing
             ),
             repeatMode = RepeatMode.Reverse
@@ -67,7 +148,7 @@ fun MascotOrb(
         targetValue = 1.08f,
         animationSpec = infiniteRepeatable(
             animation = tween(
-                durationMillis = 1800,
+                durationMillis = glowDuration,
                 easing = FastOutSlowInEasing
             ),
             repeatMode = RepeatMode.Reverse
@@ -122,11 +203,7 @@ fun MascotOrb(
 
                 drawCircle(
                     brush = Brush.radialGradient(
-                        colors = listOf(
-                            Color(0xAA7A00FF),
-                            Color(0x33006BFF),
-                            Color.Transparent
-                        ),
+                        colors = glowColors,
                         center = shadowCenter,
                         radius = glowRadius
                     ),
@@ -148,11 +225,7 @@ fun MascotOrb(
 
                 drawCircle(
                     brush = Brush.radialGradient(
-                        colors = listOf(
-                            Color(0xFF2A7BFF),
-                            Color(0xFF0E4BEF),
-                            Color(0xFF02152D)
-                        ),
+                        colors = orbColors,
                         center = movingInnerCenter,
                         radius = orbRadius * 1.1f
                     ),
@@ -210,11 +283,18 @@ fun MascotOrb(
                     y = center.y - orbRadius * 0.06f
                 )
 
+                val eyeFollowStrength = when (state) {
+                    MascotState.IDLE -> followStrength
+                    MascotState.THINKING -> followStrength + 4f
+                    MascotState.SPEAKING -> followStrength + 2f
+                    MascotState.ERROR -> followStrength + 1f
+                }
+
                 val pupilOffset = calculateEyeOffset(
                     center = center,
                     target = touchPoint,
                     maxDistance = orbRadius * 0.13f,
-                    followStrength = followStrength
+                    followStrength = eyeFollowStrength
                 )
 
                 drawRoundedEye(

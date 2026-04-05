@@ -59,4 +59,5 @@ object Routes {
     const val PRICE_HISTORY = "price_history"
 
     const val DEBUG_PAISES = "debug_paises"
+    const val AI_ASSISTANT = "ai_assistant"
 }

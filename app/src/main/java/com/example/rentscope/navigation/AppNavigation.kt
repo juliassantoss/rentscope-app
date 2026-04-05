@@ -23,6 +23,7 @@ import com.example.rentscope.data.local.LastSearchData
 import com.example.rentscope.data.local.LastSearchManager
 import com.example.rentscope.data.local.TokenManager
 import com.example.rentscope.data.remote.dto.history.FiltroSalvoDto
+import com.example.rentscope.ui.screens.AiAssistantScreen
 import com.example.rentscope.ui.screens.CountrySearchScreen
 import com.example.rentscope.ui.screens.DebugPaisesScreen
 import com.example.rentscope.ui.screens.FavoritesScreen
@@ -98,6 +99,9 @@ fun AppNavigation() {
                     padding = padding,
                     onContinue = { continent ->
                         navController.navigate(Routes.countries(continent))
+                    },
+                    onOpenAssistant = {
+                        navController.navigate(Routes.AI_ASSISTANT)
                     }
                 )
             }
@@ -319,6 +323,12 @@ fun AppNavigation() {
 
             composable(Routes.PRICE_HISTORY) {
                 PriceHistoryScreen(
+                    padding = padding
+                )
+            }
+
+            composable(Routes.AI_ASSISTANT) {
+                AiAssistantScreen(
                     padding = padding
                 )
             }

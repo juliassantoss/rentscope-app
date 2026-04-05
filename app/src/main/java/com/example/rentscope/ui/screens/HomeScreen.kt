@@ -2,7 +2,6 @@ package com.example.rentscope.ui.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,7 +12,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Public
@@ -38,13 +39,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.rentscope.R
+import com.example.rentscope.ui.components.MascotOrb
+import com.example.rentscope.ui.components.MascotState
 
 private val BrandBlue = Color(0xFF2F86D6)
 
 @Composable
 fun HomeScreen(
     padding: PaddingValues,
-    onContinue: (String) -> Unit
+    onContinue: (String) -> Unit,
+    onOpenAssistant: () -> Unit
 ) {
     val europe = stringResource(R.string.continent_europe)
     val asia = stringResource(R.string.continent_asia)
@@ -59,10 +63,11 @@ fun HomeScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(padding)
+            .verticalScroll(rememberScrollState())
             .padding(horizontal = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(Modifier.height(26.dp))
+        Spacer(Modifier.height(20.dp))
 
         Text(
             text = stringResource(R.string.home_title),
@@ -70,143 +75,156 @@ fun HomeScreen(
             fontWeight = FontWeight.Bold
         )
 
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(6.dp))
 
         Text(
             text = stringResource(R.string.home_subtitle),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center
         )
 
-        Spacer(Modifier.height(22.dp))
+        Spacer(Modifier.height(16.dp))
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(18.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            shape = RoundedCornerShape(22.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFFEFF5FF)),
+            elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
         ) {
             Column(
-                modifier = Modifier.padding(18.dp),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Surface(
+                MascotOrb(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(150.dp),
-                    shape = RoundedCornerShape(14.dp),
-                    color = Color(0xFFEFF5FF)
+                    orbSize = 132.dp,
+                    state = MascotState.IDLE
+                )
+
+                Spacer(Modifier.height(10.dp))
+
+                Card(
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                 ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            imageVector = Icons.Filled.Public,
-                            contentDescription = null,
-                            modifier = Modifier.size(72.dp),
-                            tint = BrandBlue
+                    Text(
+                        text = "Olá! Posso ajudar-te com dúvidas sobre viver num local, custo de vida e muito mais 👀",
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+
+                Spacer(Modifier.height(10.dp))
+
+                Button(
+                    onClick = onOpenAssistant,
+                    shape = RoundedCornerShape(14.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = BrandBlue)
+                ) {
+                    Text(
+                        text = "Falar com assistente",
+                        color = Color.White,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+
+                Spacer(Modifier.height(18.dp))
+
+                AlignStartTitle(stringResource(R.string.home_select_continent_label))
+
+                Spacer(Modifier.height(12.dp))
+
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        ContinentChip(
+                            text = europe,
+                            selected = selectedContinent == europe,
+                            onClick = { selectedContinent = europe },
+                            modifier = Modifier.weight(1f)
+                        )
+                        ContinentChip(
+                            text = asia,
+                            selected = selectedContinent == asia,
+                            onClick = { selectedContinent = asia },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        ContinentChip(
+                            text = americas,
+                            selected = selectedContinent == americas,
+                            onClick = { selectedContinent = americas },
+                            modifier = Modifier.weight(1f)
+                        )
+                        ContinentChip(
+                            text = africa,
+                            selected = selectedContinent == africa,
+                            onClick = { selectedContinent = africa },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        ContinentChip(
+                            text = oceania,
+                            selected = selectedContinent == oceania,
+                            onClick = { selectedContinent = oceania },
+                            modifier = Modifier.weight(1f)
+                        )
+                        ContinentChip(
+                            text = antarctica,
+                            selected = selectedContinent == antarctica,
+                            onClick = { selectedContinent = antarctica },
+                            modifier = Modifier.weight(1f)
                         )
                     }
                 }
 
-                Spacer(Modifier.height(14.dp))
+                Spacer(Modifier.height(16.dp))
 
-                Text(
-                    text = stringResource(R.string.home_select_continent_card),
-                    style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Button(
+                    onClick = { onContinue(selectedContinent) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = BrandBlue)
+                ) {
+                    Text(
+                        text = stringResource(R.string.continue_button),
+                        color = Color.White,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Icon(
+                        imageVector = Icons.Filled.ChevronRight,
+                        contentDescription = null,
+                        tint = Color.White
+                    )
+                }
             }
         }
 
-        Spacer(Modifier.height(22.dp))
-
-        AlignStartTitle(stringResource(R.string.home_select_continent_label))
-
-        Spacer(Modifier.height(14.dp))
-
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                ContinentChip(
-                    text = europe,
-                    selected = selectedContinent == europe,
-                    onClick = { selectedContinent = europe },
-                    modifier = Modifier.weight(1f)
-                )
-                ContinentChip(
-                    text = asia,
-                    selected = selectedContinent == asia,
-                    onClick = { selectedContinent = asia },
-                    modifier = Modifier.weight(1f)
-                )
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                ContinentChip(
-                    text = americas,
-                    selected = selectedContinent == americas,
-                    onClick = { selectedContinent = americas },
-                    modifier = Modifier.weight(1f)
-                )
-                ContinentChip(
-                    text = africa,
-                    selected = selectedContinent == africa,
-                    onClick = { selectedContinent = africa },
-                    modifier = Modifier.weight(1f)
-                )
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                ContinentChip(
-                    text = oceania,
-                    selected = selectedContinent == oceania,
-                    onClick = { selectedContinent = oceania },
-                    modifier = Modifier.weight(1f)
-                )
-                ContinentChip(
-                    text = antarctica,
-                    selected = selectedContinent == antarctica,
-                    onClick = { selectedContinent = antarctica },
-                    modifier = Modifier.weight(1f)
-                )
-            }
-        }
-
-        Spacer(Modifier.height(22.dp))
-
-        Button(
-            onClick = { onContinue(selectedContinent) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(54.dp),
-            shape = RoundedCornerShape(14.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = BrandBlue)
-        ) {
-            Text(
-                text = stringResource(R.string.continue_button),
-                color = Color.White,
-                fontWeight = FontWeight.SemiBold
-            )
-            Spacer(Modifier.width(8.dp))
-            Icon(
-                imageVector = Icons.Filled.ChevronRight,
-                contentDescription = null,
-                tint = Color.White
-            )
-        }
-
-        Spacer(Modifier.height(14.dp))
+        Spacer(Modifier.height(100.dp))
     }
 }
 
@@ -259,7 +277,6 @@ private fun ContinentChip(
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium
             )
-
         }
     }
 }
