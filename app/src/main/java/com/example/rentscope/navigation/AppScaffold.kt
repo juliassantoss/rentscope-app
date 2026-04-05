@@ -29,10 +29,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
+import com.example.rentscope.R
 import com.example.rentscope.data.local.TokenManager
 import com.example.rentscope.data.repository.AuthRepository
 import kotlinx.coroutines.launch
@@ -106,20 +108,23 @@ fun AppScaffold(
                 Scaffold(
                     topBar = {
                         TopAppBar(
-                            title = { Text("RentScope") },
+                            title = { Text(stringResource(R.string.app_title)) },
                             navigationIcon = {
                                 if (canGoBack) {
                                     IconButton(onClick = { navController.popBackStack() }) {
                                         Icon(
                                             Icons.AutoMirrored.Filled.ArrowBack,
-                                            contentDescription = "Voltar"
+                                            contentDescription = stringResource(R.string.back)
                                         )
                                     }
                                 }
                             },
                             actions = {
                                 IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                                    Icon(Icons.Filled.Menu, contentDescription = "Menu")
+                                    Icon(
+                                        Icons.Filled.Menu,
+                                        contentDescription = stringResource(R.string.menu)
+                                    )
                                 }
                             },
                             colors = TopAppBarDefaults.topAppBarColors(
@@ -135,22 +140,22 @@ fun AppScaffold(
                             NavigationBarItem(
                                 selected = currentDestination.isRouteSelected(Routes.LANGUAGE),
                                 onClick = { navController.navigateSingleTopTo(Routes.LANGUAGE) },
-                                icon = { Icon(Icons.Filled.Language, contentDescription = "Idioma") },
-                                label = { Text("Idioma") }
+                                icon = { Icon(Icons.Filled.Language, contentDescription = stringResource(R.string.language)) },
+                                label = { Text(stringResource(R.string.language)) }
                             )
 
                             NavigationBarItem(
                                 selected = currentDestination.isRouteSelected(Routes.HOME),
                                 onClick = { navController.navigateSingleTopTo(Routes.HOME) },
-                                icon = { Icon(Icons.Filled.Home, contentDescription = "Início") },
-                                label = { Text("Início") }
+                                icon = { Icon(Icons.Filled.Home, contentDescription = stringResource(R.string.home)) },
+                                label = { Text(stringResource(R.string.home)) }
                             )
 
                             NavigationBarItem(
                                 selected = currentDestination.isRouteSelected(Routes.RESULTS),
                                 onClick = { navController.navigateSingleTopTo(Routes.RESULTS) },
-                                icon = { Icon(Icons.Filled.ShowChart, contentDescription = "Resultados") },
-                                label = { Text("Resultados") }
+                                icon = { Icon(Icons.Filled.ShowChart, contentDescription = stringResource(R.string.results)) },
+                                label = { Text(stringResource(R.string.results)) }
                             )
                         }
                     }

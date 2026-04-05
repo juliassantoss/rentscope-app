@@ -26,9 +26,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.rentscope.R
 import com.example.rentscope.data.remote.dto.history.FiltroSalvoDto
 import com.example.rentscope.data.repository.AuthRepository
 import com.example.rentscope.ui.viewmodel.HistoryViewModel
@@ -45,8 +47,8 @@ fun HistoryScreen(
     if (!isLoggedIn) {
         LoginRequiredScreen(
             padding = padding,
-            title = "Histórico de pesquisas",
-            message = "Precisa fazer login para aceder ao histórico das suas pesquisas.",
+            title = stringResource(R.string.search_history),
+            message = stringResource(R.string.login_required_history),
             onLoginClick = onLoginClick
         )
         return
@@ -63,7 +65,7 @@ fun HistoryScreen(
             .padding(16.dp)
     ) {
         Text(
-            text = "Histórico de Pesquisas",
+            text = stringResource(R.string.search_history),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold
         )
@@ -71,7 +73,7 @@ fun HistoryScreen(
         Spacer(Modifier.height(8.dp))
 
         Text(
-            text = "As suas pesquisas guardadas aparecem aqui.",
+            text = stringResource(R.string.history_subtitle),
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
@@ -79,8 +81,8 @@ fun HistoryScreen(
 
         if (vm.historico.isEmpty()) {
             EmptyStateCard(
-                title = "Ainda não há pesquisas guardadas",
-                message = "Depois de aplicar filtros no mapa com sessão iniciada, as buscas aparecem aqui."
+                title = stringResource(R.string.no_saved_searches_title),
+                message = stringResource(R.string.no_saved_searches_message)
             )
         } else {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -131,7 +133,7 @@ private fun HistoryItemCard(
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        text = "Código: ${item.country_code}",
+                        text = stringResource(R.string.code_label, item.country_code),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -147,14 +149,14 @@ private fun HistoryItemCard(
                     IconButton(onClick = onToggleFavorite) {
                         Icon(
                             imageVector = if (item.favorito) Icons.Filled.Star else Icons.Outlined.StarBorder,
-                            contentDescription = "Favoritar"
+                            contentDescription = stringResource(R.string.favorite_action)
                         )
                     }
 
                     IconButton(onClick = onDelete) {
                         Icon(
                             imageVector = Icons.Filled.DeleteOutline,
-                            contentDescription = "Remover"
+                            contentDescription = stringResource(R.string.remove_action)
                         )
                     }
                 }
@@ -163,14 +165,20 @@ private fun HistoryItemCard(
             Spacer(Modifier.height(10.dp))
 
             Text(
-                text = "Renda: ${item.renda_min ?: "-"} até ${item.renda_max ?: "-"} €/m²",
+                text = stringResource(R.string.rent_range_label, item.renda_min ?: "-", item.renda_max ?: "-"),
                 style = MaterialTheme.typography.bodyMedium
             )
 
             Spacer(Modifier.height(4.dp))
 
             Text(
-                text = "Pesos — Renda: ${item.peso_renda} | Escolas: ${item.peso_escolas} | Hospitais: ${item.peso_hospitais} | Criminalidade: ${item.peso_criminalidade}",
+                text = stringResource(
+                    R.string.weights_summary_generic,
+                    item.peso_renda,
+                    item.peso_escolas,
+                    item.peso_hospitais,
+                    item.peso_criminalidade
+                ),
                 style = MaterialTheme.typography.bodyMedium
             )
 
@@ -180,7 +188,7 @@ private fun HistoryItemCard(
                 onClick = onOpen,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Ver novamente")
+                Text(stringResource(R.string.open_again))
             }
         }
     }

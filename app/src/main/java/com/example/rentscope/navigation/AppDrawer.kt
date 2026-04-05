@@ -14,10 +14,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ShowChart
 import androidx.compose.material.icons.filled.StarBorder
-import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,9 +29,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.rentscope.R
 
 @Composable
 fun AppDrawer(
@@ -80,7 +80,7 @@ fun AppDrawer(
                     IconButton(onClick = onClose) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Fechar",
+                            contentDescription = stringResource(R.string.close),
                             tint = Color.White
                         )
                     }
@@ -89,7 +89,11 @@ fun AppDrawer(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = if (isLoggedIn) "Sessão iniciada" else "Bem-vindo",
+                    text = if (isLoggedIn) {
+                        stringResource(R.string.session_started)
+                    } else {
+                        stringResource(R.string.welcome)
+                    },
                     color = Color.White,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
@@ -99,7 +103,7 @@ fun AppDrawer(
                     text = if (isLoggedIn && !userEmail.isNullOrBlank()) {
                         userEmail
                     } else {
-                        "Explore o mundo com RentScope"
+                        stringResource(R.string.explore_rentscope)
                     },
                     color = Color.White.copy(alpha = 0.9f)
                 )
@@ -108,7 +112,11 @@ fun AppDrawer(
 
                 TextButton(onClick = onAuthClick) {
                     Text(
-                        text = if (isLoggedIn) "Terminar sessão" else "Fazer login",
+                        text = if (isLoggedIn) {
+                            stringResource(R.string.logout)
+                        } else {
+                            stringResource(R.string.login)
+                        },
                         color = Color.White,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -117,38 +125,24 @@ fun AppDrawer(
         }
 
         NavigationDrawerItem(
-            label = { Text("Favoritos") },
+            label = { Text(stringResource(R.string.favorites)) },
             selected = false,
             onClick = { onItemClick(Routes.FAVORITES) },
             icon = { Icon(Icons.Default.StarBorder, contentDescription = null) }
         )
 
         NavigationDrawerItem(
-            label = { Text("Histórico de Pesquisas") },
+            label = { Text(stringResource(R.string.search_history)) },
             selected = false,
             onClick = { onItemClick(Routes.HISTORY) },
             icon = { Icon(Icons.Default.AccessTime, contentDescription = null) }
         )
 
         NavigationDrawerItem(
-            label = { Text("Países Disponíveis") },
+            label = { Text(stringResource(R.string.price_history)) },
             selected = false,
-            onClick = { onItemClick(Routes.HOME) },
-            icon = { Icon(Icons.Default.LocationOn, contentDescription = null) }
-        )
-
-        NavigationDrawerItem(
-            label = { Text("Comparar Regiões") },
-            selected = false,
-            onClick = { onItemClick(Routes.RESULTS) },
-            icon = { Icon(Icons.Default.TrendingUp, contentDescription = null) }
-        )
-
-        NavigationDrawerItem(
-            label = { Text("Configurações") },
-            selected = false,
-            onClick = { onItemClick(Routes.LANGUAGE) },
-            icon = { Icon(Icons.Default.Settings, contentDescription = null) }
+            onClick = { onItemClick(Routes.PRICE_HISTORY) },
+            icon = { Icon(Icons.Default.ShowChart, contentDescription = null) }
         )
 
         Spacer(modifier = Modifier.weight(1f))
@@ -156,7 +150,7 @@ fun AppDrawer(
         Divider()
 
         Text(
-            text = "Versão 1.0.0",
+            text = stringResource(R.string.version_label),
             modifier = Modifier.padding(16.dp),
             style = MaterialTheme.typography.bodySmall
         )

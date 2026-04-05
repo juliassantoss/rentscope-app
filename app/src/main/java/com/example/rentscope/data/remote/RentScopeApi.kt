@@ -1,5 +1,6 @@
 package com.example.rentscope.data.remote
 
+import com.example.rentscope.data.remote.dto.MunicipioDto
 import com.example.rentscope.data.remote.dto.PaisDto
 import com.example.rentscope.data.remote.dto.auth.LoginRequestDto
 import com.example.rentscope.data.remote.dto.auth.RegisterRequestDto
@@ -8,6 +9,7 @@ import com.example.rentscope.data.remote.dto.auth.UserDto
 import com.example.rentscope.data.remote.dto.history.FavoritoCreateDto
 import com.example.rentscope.data.remote.dto.history.FiltroSalvoCreateDto
 import com.example.rentscope.data.remote.dto.history.FiltroSalvoDto
+import com.example.rentscope.data.remote.dto.pricehistory.PriceHistoryDto
 import com.example.rentscope.data.remote.dto.score.ScoreFiltroRequestDto
 import com.example.rentscope.data.remote.dto.score.ScoreMunicipioDto
 import retrofit2.Response
@@ -16,11 +18,15 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface RentScopeApi {
 
     @GET("paises")
     suspend fun listarPaises(): List<PaisDto>
+
+    @GET("municipios/")
+    suspend fun getMunicipios(): Response<List<MunicipioDto>>
 
     @POST("auth/register")
     suspend fun register(
@@ -65,4 +71,9 @@ interface RentScopeApi {
     suspend fun removerFavorito(
         @Path("filtroId") filtroId: String
     ): Response<Unit>
+
+    @GET("renda/historico")
+    suspend fun getHistoricoRenda(
+        @Query("codigo_municipio") codigo: Int
+    ): Response<List<PriceHistoryDto>>
 }

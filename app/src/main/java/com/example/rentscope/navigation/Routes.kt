@@ -56,6 +56,7 @@ object Routes {
     const val RESULTS = "results"
     const val HISTORY = "history"
     const val FAVORITES = "favorites"
+    const val PRICE_HISTORY = "price_history"
 
     const val DEBUG_PAISES = "debug_paises"
 }

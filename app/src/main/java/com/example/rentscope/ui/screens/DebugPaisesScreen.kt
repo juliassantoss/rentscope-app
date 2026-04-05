@@ -18,8 +18,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.rentscope.R
 import com.example.rentscope.ui.viewmodel.PaisesViewModel
 
 @Composable
@@ -28,7 +30,6 @@ fun DebugPaisesScreen(
 ) {
     val state by vm.state.collectAsState()
 
-    // chama 1 vez ao entrar na tela
     LaunchedEffect(Unit) {
         vm.carregarPaises()
     }
@@ -38,11 +39,10 @@ fun DebugPaisesScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text("Debug /paises", style = MaterialTheme.typography.titleLarge)
+        Text(stringResource(R.string.debug_countries_title), style = MaterialTheme.typography.titleLarge)
         Spacer(Modifier.height(8.dp))
 
-        // nunca fica “branco”: mostra quantos itens vieram
-        Text("Itens recebidos: ${state.paises.size}")
+        Text(stringResource(R.string.received_items, state.paises.size))
 
         Spacer(Modifier.height(12.dp))
 
@@ -50,23 +50,23 @@ fun DebugPaisesScreen(
             Row {
                 CircularProgressIndicator()
                 Spacer(Modifier.width(12.dp))
-                Text("Carregando...")
+                Text(stringResource(R.string.loading))
             }
         }
 
         state.error?.let { err ->
             Spacer(Modifier.height(12.dp))
-            Text("Erro: $err")
+            Text(stringResource(R.string.error_with_message, err))
             Spacer(Modifier.height(12.dp))
             Button(onClick = { vm.carregarPaises() }) {
-                Text("Tentar de novo")
+                Text(stringResource(R.string.try_again))
             }
         }
 
         Spacer(Modifier.height(12.dp))
 
         if (!state.loading && state.error == null && state.paises.isEmpty()) {
-            Text("Nenhum país retornou da API (lista vazia).")
+            Text(stringResource(R.string.no_countries_returned))
         } else {
             LazyColumn {
                 items(state.paises) { p ->

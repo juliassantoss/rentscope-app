@@ -40,9 +40,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.rentscope.R
 import com.example.rentscope.ui.viewmodel.PaisesViewModel
 
 private val BrandBlue = Color(0xFF2F86D6)
@@ -62,21 +64,24 @@ fun CountrySearchScreen(
     val vm: PaisesViewModel = viewModel()
     val state by vm.state.collectAsState()
 
-    // Carrega países ao entrar na tela (ou se mudar de continente)
     LaunchedEffect(continent) {
         vm.carregarPaises()
     }
 
     var query by remember { mutableStateOf("") }
 
-    // Mapeia DTO -> CountryUi (placeholder das regiões)
-    val allCountries = remember(state.paises) {
+    val regionsAvailablePlaceholder = stringResource(R.string.regions_available_placeholder)
+    val searchCountryPlaceholder = stringResource(R.string.search_country_placeholder)
+    val loadingCountriesText = stringResource(R.string.loading_countries)
+    val tryAgainText = stringResource(R.string.try_again)
+
+    val allCountries = remember(state.paises, regionsAvailablePlaceholder) {
         state.paises
             .map { dto ->
                 CountryUi(
                     code = dto.codigo,
                     name = dto.nome,
-                    regionsAvailableText = "- regiões disponíveis"
+                    regionsAvailableText = regionsAvailablePlaceholder
                 )
             }
             .sortedBy { it.name }
@@ -84,9 +89,12 @@ fun CountrySearchScreen(
 
     val filtered = remember(query, allCountries) {
         val q = query.trim().lowercase()
-        if (q.isBlank()) allCountries
-        else allCountries.filter {
-            it.name.lowercase().contains(q) || it.code.lowercase().contains(q)
+        if (q.isBlank()) {
+            allCountries
+        } else {
+            allCountries.filter {
+                it.name.lowercase().contains(q) || it.code.lowercase().contains(q)
+            }
         }
     }
 
@@ -99,12 +107,11 @@ fun CountrySearchScreen(
             .fillMaxSize()
             .padding(padding)
     ) {
-        // Search bar
         OutlinedTextField(
             value = query,
             onValueChange = { query = it },
             leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
-            placeholder = { Text("Pesquisar país...") },
+            placeholder = { Text(searchCountryPlaceholder) },
             singleLine = true,
             shape = RoundedCornerShape(14.dp),
             modifier = Modifier
@@ -116,7 +123,6 @@ fun CountrySearchScreen(
         Spacer(Modifier.height(10.dp))
         Divider()
 
-        // Status (loading/erro)
         when {
             state.loading -> {
                 Row(
@@ -125,27 +131,27 @@ fun CountrySearchScreen(
                 ) {
                     CircularProgressIndicator(modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(10.dp))
-                    Text("Carregando países...")
+                    Text(loadingCountriesText)
                 }
             }
 
             state.error != null -> {
                 Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)) {
                     Text(
-                        text = "Erro ao carregar países: ${state.error}",
+                        text = stringResource(R.string.error_loading_countries, state.error ?: ""),
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodySmall
                     )
                     Spacer(Modifier.height(8.dp))
                     Button(onClick = { vm.carregarPaises() }) {
-                        Text("Tentar novamente")
+                        Text(tryAgainText)
                     }
                 }
             }
 
             else -> {
                 Text(
-                    text = "${filtered.size} países encontrados",
+                    text = stringResource(R.string.countries_found, filtered.size),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)

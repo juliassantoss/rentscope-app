@@ -24,11 +24,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.example.rentscope.R
 
 @Composable
 fun LoginScreen(
@@ -52,7 +54,7 @@ fun LoginScreen(
         Spacer(Modifier.height(12.dp))
 
         Text(
-            text = "Entrar",
+            text = stringResource(R.string.login_title),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold
         )
@@ -60,7 +62,7 @@ fun LoginScreen(
         Spacer(Modifier.height(6.dp))
 
         Text(
-            text = "Acesse sua conta no RentScope",
+            text = stringResource(R.string.login_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -71,7 +73,7 @@ fun LoginScreen(
             value = email,
             onValueChange = { email = it },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("E-mail") },
+            label = { Text(stringResource(R.string.email_label)) },
             singleLine = true,
             enabled = !isLoading,
             keyboardOptions = KeyboardOptions(
@@ -86,7 +88,7 @@ fun LoginScreen(
             value = password,
             onValueChange = { password = it },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Senha") },
+            label = { Text(stringResource(R.string.password_label)) },
             singleLine = true,
             enabled = !isLoading,
             visualTransformation = PasswordVisualTransformation(),
@@ -118,7 +120,7 @@ fun LoginScreen(
             horizontalArrangement = Arrangement.End
         ) {
             Text(
-                text = "Esqueceu sua senha?",
+                text = stringResource(R.string.forgot_password),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.clickable(enabled = !isLoading) { onForgotPasswordClick() }
@@ -135,7 +137,7 @@ fun LoginScreen(
             if (isLoading) {
                 CircularProgressIndicator()
             } else {
-                Text("Entrar", fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.login), fontWeight = FontWeight.SemiBold)
             }
         }
 
@@ -145,11 +147,11 @@ fun LoginScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Ainda não tem conta? ",
+                text = stringResource(R.string.no_account_yet),
                 style = MaterialTheme.typography.bodyMedium
             )
             Text(
-                text = "Criar conta",
+                text = stringResource(R.string.create_account_action),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.SemiBold,

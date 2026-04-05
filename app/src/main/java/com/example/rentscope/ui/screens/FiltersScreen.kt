@@ -24,8 +24,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.rentscope.R
+import java.util.Locale
 
 @Composable
 fun FiltersScreen(
@@ -49,7 +52,6 @@ fun FiltersScreen(
 ) {
     var rendaMin by remember { mutableFloatStateOf(initialRendaMin) }
     var rendaMax by remember { mutableFloatStateOf(initialRendaMax) }
-
     var pesoRenda by remember { mutableFloatStateOf(initialPesoRenda) }
     var pesoEscolas by remember { mutableFloatStateOf(initialPesoEscolas) }
     var pesoHospitais by remember { mutableFloatStateOf(initialPesoHospitais) }
@@ -65,7 +67,7 @@ fun FiltersScreen(
             .padding(16.dp)
     ) {
         Text(
-            text = "Filtros — $countryName",
+            text = stringResource(R.string.filters_title, countryName),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
@@ -73,7 +75,7 @@ fun FiltersScreen(
         Spacer(Modifier.height(12.dp))
 
         Text(
-            text = "Todos os municípios continuam no mapa. Os filtros e pesos servem para ajustar o grau de adequação de cada um.",
+            text = stringResource(R.string.filters_intro),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -81,9 +83,9 @@ fun FiltersScreen(
         Spacer(Modifier.height(16.dp))
 
         SliderCard(
-            title = "Renda mínima (€ / m²)",
-            valueText = String.format("%.1f", rendaMin),
-            subtitle = "Valor mínimo desejado para o arrendamento médio por m².",
+            title = stringResource(R.string.rent_min_title),
+            valueText = format1(rendaMin),
+            subtitle = stringResource(R.string.rent_min_subtitle),
             value = rendaMin,
             onValueChange = {
                 rendaMin = it
@@ -95,9 +97,9 @@ fun FiltersScreen(
         Spacer(Modifier.height(12.dp))
 
         SliderCard(
-            title = "Renda máxima (€ / m²)",
-            valueText = String.format("%.1f", rendaMax),
-            subtitle = "Valor máximo desejado para o arrendamento médio por m².",
+            title = stringResource(R.string.rent_max_title),
+            valueText = format1(rendaMax),
+            subtitle = stringResource(R.string.rent_max_subtitle),
             value = rendaMax,
             onValueChange = {
                 rendaMax = it.coerceAtLeast(rendaMin)
@@ -108,7 +110,7 @@ fun FiltersScreen(
         Spacer(Modifier.height(18.dp))
 
         Text(
-            text = "Importância de cada critério",
+            text = stringResource(R.string.filters_weights_title),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
@@ -116,9 +118,9 @@ fun FiltersScreen(
         Spacer(Modifier.height(10.dp))
 
         SliderCard(
-            title = "Peso da renda",
-            valueText = String.format("%.1f", pesoRenda),
-            subtitle = "Quanto maior, mais o score valoriza municípios com renda próxima do intervalo desejado.",
+            title = stringResource(R.string.weight_rent_title),
+            valueText = format1(pesoRenda),
+            subtitle = stringResource(R.string.weight_rent_subtitle),
             value = pesoRenda,
             onValueChange = { pesoRenda = it },
             range = 0f..3f
@@ -127,9 +129,9 @@ fun FiltersScreen(
         Spacer(Modifier.height(12.dp))
 
         SliderCard(
-            title = "Peso das escolas",
-            valueText = String.format("%.1f", pesoEscolas),
-            subtitle = "Quanto maior, mais o score valoriza a oferta de escolas.",
+            title = stringResource(R.string.weight_schools_title),
+            valueText = format1(pesoEscolas),
+            subtitle = stringResource(R.string.weight_schools_subtitle),
             value = pesoEscolas,
             onValueChange = { pesoEscolas = it },
             range = 0f..3f
@@ -138,9 +140,9 @@ fun FiltersScreen(
         Spacer(Modifier.height(12.dp))
 
         SliderCard(
-            title = "Peso dos hospitais",
-            valueText = String.format("%.1f", pesoHospitais),
-            subtitle = "Quanto maior, mais o score valoriza a oferta de hospitais.",
+            title = stringResource(R.string.weight_hospitals_title),
+            valueText = format1(pesoHospitais),
+            subtitle = stringResource(R.string.weight_hospitals_subtitle),
             value = pesoHospitais,
             onValueChange = { pesoHospitais = it },
             range = 0f..3f
@@ -149,9 +151,9 @@ fun FiltersScreen(
         Spacer(Modifier.height(12.dp))
 
         SliderCard(
-            title = "Peso da criminalidade",
-            valueText = String.format("%.1f", pesoCriminalidade),
-            subtitle = "Quanto maior, mais o score penaliza municípios com maior criminalidade.",
+            title = stringResource(R.string.weight_crime_title),
+            valueText = format1(pesoCriminalidade),
+            subtitle = stringResource(R.string.weight_crime_subtitle),
             value = pesoCriminalidade,
             onValueChange = { pesoCriminalidade = it },
             range = 0f..3f
@@ -166,7 +168,7 @@ fun FiltersScreen(
         ) {
             Column(Modifier.padding(14.dp)) {
                 Text(
-                    text = "Resumo dos filtros",
+                    text = stringResource(R.string.filters_summary_title),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -174,14 +176,24 @@ fun FiltersScreen(
                 Spacer(Modifier.height(8.dp))
 
                 Text(
-                    text = "Renda desejada: ${String.format("%.1f", rendaMin)} até ${String.format("%.1f", rendaMax)} €/m²",
+                    text = stringResource(
+                        R.string.filters_summary_rent,
+                        format1(rendaMin),
+                        format1(rendaMax)
+                    ),
                     style = MaterialTheme.typography.bodyMedium
                 )
 
                 Spacer(Modifier.height(4.dp))
 
                 Text(
-                    text = "Pesos — Renda: ${String.format("%.1f", pesoRenda)} | Escolas: ${String.format("%.1f", pesoEscolas)} | Hospitais: ${String.format("%.1f", pesoHospitais)} | Criminalidade: ${String.format("%.1f", pesoCriminalidade)}",
+                    text = stringResource(
+                        R.string.filters_summary_weights,
+                        format1(pesoRenda),
+                        format1(pesoEscolas),
+                        format1(pesoHospitais),
+                        format1(pesoCriminalidade)
+                    ),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
@@ -204,7 +216,7 @@ fun FiltersScreen(
             shape = RoundedCornerShape(14.dp)
         ) {
             Text(
-                text = "Aplicar filtros",
+                text = stringResource(R.string.apply_filters),
                 fontWeight = FontWeight.SemiBold
             )
         }
@@ -263,3 +275,5 @@ private fun SliderCard(
         }
     }
 }
+
+private fun format1(value: Float): String = String.format(Locale.US, "%.1f", value)

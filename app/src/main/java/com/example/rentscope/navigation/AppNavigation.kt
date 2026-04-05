@@ -29,9 +29,11 @@ import com.example.rentscope.ui.screens.FavoritesScreen
 import com.example.rentscope.ui.screens.FiltersScreen
 import com.example.rentscope.ui.screens.HistoryScreen
 import com.example.rentscope.ui.screens.HomeScreen
+import com.example.rentscope.ui.screens.LanguageScreen
 import com.example.rentscope.ui.screens.LoginScreen
 import com.example.rentscope.ui.screens.MapScreen
 import com.example.rentscope.ui.screens.NewAccountScreen
+import com.example.rentscope.ui.screens.PriceHistoryScreen
 import com.example.rentscope.ui.screens.ResultsScreen
 import com.example.rentscope.ui.viewmodel.AuthViewModel
 
@@ -315,12 +317,18 @@ fun AppNavigation() {
                 )
             }
 
+            composable(Routes.PRICE_HISTORY) {
+                PriceHistoryScreen(
+                    padding = padding
+                )
+            }
+
             composable(Routes.DEBUG_PAISES) {
                 DebugPaisesScreen()
             }
 
             composable(Routes.LANGUAGE) {
-                PlaceholderScreen(padding = padding, text = "Idioma (em construção)")
+                LanguageScreen(padding = padding)
             }
         }
     }

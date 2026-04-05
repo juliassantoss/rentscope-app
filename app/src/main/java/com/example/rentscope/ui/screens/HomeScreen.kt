@@ -33,9 +33,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.rentscope.R
 
 private val BrandBlue = Color(0xFF2F86D6)
 
@@ -44,7 +46,14 @@ fun HomeScreen(
     padding: PaddingValues,
     onContinue: (String) -> Unit
 ) {
-    var selectedContinent by remember { mutableStateOf("Europa") }
+    val europe = stringResource(R.string.continent_europe)
+    val asia = stringResource(R.string.continent_asia)
+    val americas = stringResource(R.string.continent_americas)
+    val africa = stringResource(R.string.continent_africa)
+    val oceania = stringResource(R.string.continent_oceania)
+    val antarctica = stringResource(R.string.continent_antarctica)
+
+    var selectedContinent by remember { mutableStateOf(europe) }
 
     Column(
         modifier = Modifier
@@ -56,7 +65,7 @@ fun HomeScreen(
         Spacer(Modifier.height(26.dp))
 
         Text(
-            text = "Bem-vindo ao RentScope",
+            text = stringResource(R.string.home_title),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold
         )
@@ -64,7 +73,7 @@ fun HomeScreen(
         Spacer(Modifier.height(10.dp))
 
         Text(
-            text = "Descubra os melhores lugares para morar",
+            text = stringResource(R.string.home_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -101,7 +110,7 @@ fun HomeScreen(
                 Spacer(Modifier.height(14.dp))
 
                 Text(
-                    text = "Selecione um continente para começar\nsua busca",
+                    text = stringResource(R.string.home_select_continent_card),
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -111,7 +120,7 @@ fun HomeScreen(
 
         Spacer(Modifier.height(22.dp))
 
-        AlignStartTitle("Selecione o continente")
+        AlignStartTitle(stringResource(R.string.home_select_continent_label))
 
         Spacer(Modifier.height(14.dp))
 
@@ -120,55 +129,55 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Row(
-                Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 ContinentChip(
-                    text = "Europa",
-                    selected = selectedContinent == "Europa",
-                    onClick = { selectedContinent = "Europa" },
+                    text = europe,
+                    selected = selectedContinent == europe,
+                    onClick = { selectedContinent = europe },
                     modifier = Modifier.weight(1f)
                 )
                 ContinentChip(
-                    text = "Ásia",
-                    selected = selectedContinent == "Ásia",
-                    onClick = { selectedContinent = "Ásia" },
+                    text = asia,
+                    selected = selectedContinent == asia,
+                    onClick = { selectedContinent = asia },
                     modifier = Modifier.weight(1f)
                 )
             }
 
             Row(
-                Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 ContinentChip(
-                    text = "Américas",
-                    selected = selectedContinent == "Américas",
-                    onClick = { selectedContinent = "Américas" },
+                    text = americas,
+                    selected = selectedContinent == americas,
+                    onClick = { selectedContinent = americas },
                     modifier = Modifier.weight(1f)
                 )
                 ContinentChip(
-                    text = "África",
-                    selected = selectedContinent == "África",
-                    onClick = { selectedContinent = "África" },
+                    text = africa,
+                    selected = selectedContinent == africa,
+                    onClick = { selectedContinent = africa },
                     modifier = Modifier.weight(1f)
                 )
             }
 
             Row(
-                Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 ContinentChip(
-                    text = "Oceania",
-                    selected = selectedContinent == "Oceania",
-                    onClick = { selectedContinent = "Oceania" },
+                    text = oceania,
+                    selected = selectedContinent == oceania,
+                    onClick = { selectedContinent = oceania },
                     modifier = Modifier.weight(1f)
                 )
                 ContinentChip(
-                    text = "Antártida",
-                    selected = selectedContinent == "Antártida",
-                    onClick = { selectedContinent = "Antártida" },
+                    text = antarctica,
+                    selected = selectedContinent == antarctica,
+                    onClick = { selectedContinent = antarctica },
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -184,7 +193,11 @@ fun HomeScreen(
             shape = RoundedCornerShape(14.dp),
             colors = ButtonDefaults.buttonColors(containerColor = BrandBlue)
         ) {
-            Text("Continuar", color = Color.White, fontWeight = FontWeight.SemiBold)
+            Text(
+                text = stringResource(R.string.continue_button),
+                color = Color.White,
+                fontWeight = FontWeight.SemiBold
+            )
             Spacer(Modifier.width(8.dp))
             Icon(
                 imageVector = Icons.Filled.ChevronRight,

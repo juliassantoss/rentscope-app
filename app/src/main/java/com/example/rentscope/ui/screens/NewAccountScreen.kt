@@ -25,11 +25,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.example.rentscope.R
 
 @Composable
 fun NewAccountScreen(
@@ -60,7 +62,7 @@ fun NewAccountScreen(
         Spacer(Modifier.height(12.dp))
 
         Text(
-            text = "Criar conta",
+            text = stringResource(R.string.create_account_title),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold
         )
@@ -68,7 +70,7 @@ fun NewAccountScreen(
         Spacer(Modifier.height(6.dp))
 
         Text(
-            text = "Crie sua conta no RentScope",
+            text = stringResource(R.string.create_account_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -79,7 +81,7 @@ fun NewAccountScreen(
             value = email,
             onValueChange = { email = it },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("E-mail") },
+            label = { Text(stringResource(R.string.email_label)) },
             singleLine = true,
             enabled = !isLoading,
             keyboardOptions = KeyboardOptions(
@@ -94,7 +96,7 @@ fun NewAccountScreen(
             value = password,
             onValueChange = { password = it },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Senha") },
+            label = { Text(stringResource(R.string.password_label)) },
             singleLine = true,
             enabled = !isLoading,
             visualTransformation = PasswordVisualTransformation(),
@@ -110,7 +112,7 @@ fun NewAccountScreen(
             value = confirmPassword,
             onValueChange = { confirmPassword = it },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Confirmar senha") },
+            label = { Text(stringResource(R.string.confirm_password_label)) },
             singleLine = true,
             enabled = !isLoading,
             visualTransformation = PasswordVisualTransformation(),
@@ -147,16 +149,16 @@ fun NewAccountScreen(
             if (isLoading) {
                 CircularProgressIndicator()
             } else {
-                Text("Criar conta", fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.create_account_action), fontWeight = FontWeight.SemiBold)
             }
         }
 
         Spacer(Modifier.height(18.dp))
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = "Já tem conta? ")
+            Text(text = stringResource(R.string.already_have_account))
             Text(
-                text = "Entrar",
+                text = stringResource(R.string.login),
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.clickable(enabled = !isLoading) { onBackToLoginClick() }

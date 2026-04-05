@@ -21,8 +21,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.rentscope.R
 import com.example.rentscope.data.remote.dto.history.FiltroSalvoDto
 
 @Composable
@@ -73,7 +75,7 @@ fun LoginRequiredScreen(
                 Spacer(Modifier.height(16.dp))
 
                 Button(onClick = onLoginClick) {
-                    Text("Fazer login")
+                    Text(stringResource(R.string.login))
                 }
             }
         }
@@ -126,14 +128,20 @@ fun FavoriteItemCardRemote(
             Spacer(Modifier.height(6.dp))
 
             Text(
-                text = "Renda: ${item.renda_min ?: "-"} até ${item.renda_max ?: "-"} €/m²",
+                text = stringResource(R.string.rent_range_label, item.renda_min ?: "-", item.renda_max ?: "-"),
                 style = MaterialTheme.typography.bodyMedium
             )
 
             Spacer(Modifier.height(4.dp))
 
             Text(
-                text = "Pesos — Renda: ${item.peso_renda} | Escolas: ${item.peso_escolas} | Hospitais: ${item.peso_hospitais} | Criminalidade: ${item.peso_criminalidade}",
+                text = stringResource(
+                    R.string.weights_summary_generic,
+                    item.peso_renda,
+                    item.peso_escolas,
+                    item.peso_hospitais,
+                    item.peso_criminalidade
+                ),
                 style = MaterialTheme.typography.bodyMedium
             )
 
@@ -143,7 +151,7 @@ fun FavoriteItemCardRemote(
                 onClick = onOpen,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Ver novamente")
+                Text(stringResource(R.string.open_again))
             }
 
             Spacer(Modifier.height(8.dp))
@@ -156,7 +164,7 @@ fun FavoriteItemCardRemote(
                     imageVector = Icons.Filled.Star,
                     contentDescription = null
                 )
-                Text("Remover dos favoritos")
+                Text(stringResource(R.string.remove_from_favorites))
             }
         }
     }

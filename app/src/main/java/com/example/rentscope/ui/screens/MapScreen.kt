@@ -32,9 +32,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.rentscope.R
 import com.example.rentscope.data.geo.PolygonRings
 import com.example.rentscope.data.geo.extractPolygonsFromGeoJson
 import com.example.rentscope.data.geo.loadAssetText
@@ -48,6 +50,7 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Polygon
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -168,7 +171,7 @@ fun MapScreen(
         ) {
             Icon(Icons.Default.Tune, contentDescription = null)
             Spacer(Modifier.width(10.dp))
-            Text("Configurar Filtros", fontWeight = FontWeight.SemiBold)
+            Text(stringResource(R.string.configure_filters), fontWeight = FontWeight.SemiBold)
         }
 
         Spacer(Modifier.height(14.dp))
@@ -180,7 +183,7 @@ fun MapScreen(
         ) {
             Column(Modifier.padding(16.dp)) {
                 Text(
-                    text = "Mapa de Acordo com as Preferências",
+                    text = stringResource(R.string.map_preferences_title),
                     color = Color.White,
                     fontWeight = FontWeight.Bold
                 )
@@ -207,7 +210,7 @@ fun MapScreen(
                 ) {
                     CircularProgressIndicator()
                     Spacer(Modifier.width(12.dp))
-                    Text("A carregar dados reais...")
+                    Text(stringResource(R.string.loading_real_data))
                 }
             }
 
@@ -274,12 +277,12 @@ private fun scoreToFillColor(score: Double): Color {
 private fun LegendPiorMelhor() {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(14.dp)) {
-            Text("Legenda", fontWeight = FontWeight.SemiBold)
+            Text(stringResource(R.string.legend_title), fontWeight = FontWeight.SemiBold)
 
             Spacer(Modifier.height(10.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Menor adequação")
+                Text(stringResource(R.string.lower_fit))
                 Spacer(Modifier.width(12.dp))
 
                 Box(
@@ -295,7 +298,7 @@ private fun LegendPiorMelhor() {
                 )
 
                 Spacer(Modifier.width(12.dp))
-                Text("Maior adequação")
+                Text(stringResource(R.string.higher_fit))
             }
         }
     }

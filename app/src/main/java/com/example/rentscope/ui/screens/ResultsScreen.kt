@@ -18,9 +18,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.rentscope.R
 import com.example.rentscope.data.local.LastSearchData
 import com.example.rentscope.data.local.LastSearchManager
 import com.example.rentscope.data.remote.dto.score.ScoreMunicipioDto
@@ -56,7 +58,7 @@ fun ResultsScreen(
             .padding(16.dp)
     ) {
         Text(
-            text = "Resultados",
+            text = stringResource(R.string.results),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold
         )
@@ -64,7 +66,7 @@ fun ResultsScreen(
         Spacer(Modifier.height(8.dp))
 
         Text(
-            text = "Top 10 cidades com melhor adequação de acordo com a última pesquisa.",
+            text = stringResource(R.string.results_subtitle),
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
@@ -72,8 +74,8 @@ fun ResultsScreen(
 
         if (lastSearch == null) {
             EmptyStateCard(
-                title = "Ainda não há resultados",
-                message = "Faça uma pesquisa no mapa para ver aqui as 10 melhores cidades."
+                title = stringResource(R.string.no_results_title),
+                message = stringResource(R.string.no_results_message)
             )
             return
         }
@@ -88,22 +90,22 @@ fun ResultsScreen(
         when {
             vm.isLoading -> {
                 EmptyStateCard(
-                    title = "A carregar resultados",
-                    message = "Estamos a calcular as 10 melhores cidades da última pesquisa."
+                    title = stringResource(R.string.loading_results_title),
+                    message = stringResource(R.string.loading_results_message)
                 )
             }
 
             !vm.errorMessage.isNullOrBlank() -> {
                 EmptyStateCard(
-                    title = "Erro ao carregar resultados",
-                    message = vm.errorMessage ?: "Erro inesperado."
+                    title = stringResource(R.string.error_loading_results_title),
+                    message = vm.errorMessage ?: stringResource(R.string.unexpected_error)
                 )
             }
 
             vm.municipios.isEmpty() -> {
                 EmptyStateCard(
-                    title = "Sem resultados",
-                    message = "Não foi possível encontrar cidades para esta pesquisa."
+                    title = stringResource(R.string.no_data_title),
+                    message = stringResource(R.string.no_data_message)
                 )
             }
 
@@ -130,19 +132,29 @@ private fun LastSearchSummaryCard(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Última pesquisa",
+                text = stringResource(R.string.last_search_title),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
 
             Spacer(Modifier.height(8.dp))
 
-            Text(text = "País: ${data.countryName}")
+            Text(text = stringResource(R.string.country_label, data.countryName))
             Text(
-                text = "Renda: ${formatNullable(data.rendaMin)} até ${formatNullable(data.rendaMax)} €/m²"
+                text = stringResource(
+                    R.string.rent_range_label,
+                    formatNullable(data.rendaMin),
+                    formatNullable(data.rendaMax)
+                )
             )
             Text(
-                text = "Pesos — Renda: ${format1(data.pesoRenda)} | Escolas: ${format1(data.pesoEscolas)} | Hospitais: ${format1(data.pesoHospitais)} | Criminalidade: ${format1(data.pesoCriminalidade)}"
+                text = stringResource(
+                    R.string.weights_summary_string,
+                    format1(data.pesoRenda),
+                    format1(data.pesoEscolas),
+                    format1(data.pesoHospitais),
+                    format1(data.pesoCriminalidade)
+                )
             )
 
             Spacer(Modifier.height(12.dp))
@@ -151,7 +163,7 @@ private fun LastSearchSummaryCard(
                 onClick = onOpenMapClick,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Abrir mapa desta pesquisa")
+                Text(stringResource(R.string.open_map_for_search))
             }
         }
     }
@@ -180,11 +192,11 @@ private fun ResultCityCard(item: ScoreMunicipioDto) {
 
             Spacer(Modifier.height(8.dp))
 
-            Text(text = "Score: ${format1(item.score)}")
-            Text(text = "Renda: ${item.valorMedioM2?.let { format1(it) } ?: "-"} €/m²")
-            Text(text = "Escolas: ${item.totalEscolas}")
-            Text(text = "Hospitais: ${item.totalHospitais}")
-            Text(text = "Criminalidade: ${item.totalCrimes}")
+            Text(text = stringResource(R.string.score_label, format1(item.score)))
+            Text(text = stringResource(R.string.city_rent_label, item.valorMedioM2?.let { format1(it) } ?: "-"))
+            Text(text = stringResource(R.string.schools_label, item.totalEscolas))
+            Text(text = stringResource(R.string.hospitals_label, item.totalHospitais))
+            Text(text = stringResource(R.string.crime_label, item.totalCrimes))
         }
     }
 }

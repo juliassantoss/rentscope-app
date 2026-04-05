@@ -68,4 +68,6 @@ dependencies {
     implementation("com.squareup.moshi:moshi-kotlin:1.15.1")
     implementation("com.google.android.gms:play-services-maps:18.2.0")
     implementation("com.google.maps.android:maps-compose:4.4.1")
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }

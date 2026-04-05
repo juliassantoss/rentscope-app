@@ -14,9 +14,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.rentscope.R
 import com.example.rentscope.data.remote.dto.history.FiltroSalvoDto
 import com.example.rentscope.data.repository.AuthRepository
 import com.example.rentscope.ui.viewmodel.HistoryViewModel
@@ -33,8 +35,8 @@ fun FavoritesScreen(
     if (!isLoggedIn) {
         LoginRequiredScreen(
             padding = padding,
-            title = "Favoritos",
-            message = "Precisa fazer login para guardar e visualizar favoritos.",
+            title = stringResource(R.string.favorites),
+            message = stringResource(R.string.login_required_favorites),
             onLoginClick = onLoginClick
         )
         return
@@ -51,7 +53,7 @@ fun FavoritesScreen(
             .padding(16.dp)
     ) {
         Text(
-            text = "Favoritos",
+            text = stringResource(R.string.favorites),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold
         )
@@ -59,7 +61,7 @@ fun FavoritesScreen(
         Spacer(Modifier.height(8.dp))
 
         Text(
-            text = "As suas pesquisas favoritas aparecem aqui.",
+            text = stringResource(R.string.favorites_subtitle),
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
@@ -67,8 +69,8 @@ fun FavoritesScreen(
 
         if (vm.favoritos.isEmpty()) {
             EmptyStateCard(
-                title = "Ainda não há favoritos",
-                message = "Marque uma pesquisa como favorita no histórico para ela aparecer aqui."
+                title = stringResource(R.string.no_favorites_title),
+                message = stringResource(R.string.no_favorites_message)
             )
         } else {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
