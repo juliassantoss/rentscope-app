@@ -21,18 +21,18 @@ object ScoreRepository {
         limite: Int = 200
     ): Result<List<ScoreMunicipioDto>> {
         return try {
-            val response = api.aplicarFiltros(
-                ScoreFiltroRequestDto(
-                    busca = busca,
-                    renda_min = rendaMin,
-                    renda_max = rendaMax,
-                    peso_renda = pesoRenda,
-                    peso_escolas = pesoEscolas,
-                    peso_hospitais = pesoHospitais,
-                    peso_criminalidade = pesoCriminalidade,
-                    limite = limite
-                )
+            val request = ScoreFiltroRequestDto(
+                busca = busca ?: "",
+                renda_min = rendaMin ?: 0f,
+                renda_max = rendaMax ?: 20f,
+                peso_renda = pesoRenda,
+                peso_escolas = pesoEscolas,
+                peso_hospitais = pesoHospitais,
+                peso_criminalidade = pesoCriminalidade,
+                limite = limite
             )
+
+            val response = api.aplicarFiltros(request)
 
             if (response.isSuccessful) {
                 val body = response.body()
@@ -42,7 +42,8 @@ object ScoreRepository {
                     Result.failure(Exception("Resposta vazia do servidor."))
                 }
             } else {
-                Result.failure(Exception(parseErrorMessage(response.errorBody()?.string())))
+                val rawError = response.errorBody()?.string()
+                Result.failure(Exception(parseErrorMessage(rawError)))
             }
         } catch (e: Exception) {
             Result.failure(Exception(e.message ?: "Erro ao aplicar filtros."))
@@ -54,9 +55,11 @@ object ScoreRepository {
 
         return try {
             val json = JSONObject(rawBody)
-            json.optString("detail").ifBlank { "Erro inesperado." }
+            json.optString("detail").ifBlank {
+                rawBody
+            }
         } catch (_: Exception) {
-            "Erro inesperado."
+            rawBody
         }
     }
 }

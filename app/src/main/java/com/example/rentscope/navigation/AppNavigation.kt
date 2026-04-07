@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -169,21 +171,42 @@ fun AppNavigation() {
                 val countryCode = Uri.decode(entry.arguments?.getString("countryCode") ?: "")
                 val countryName = Uri.decode(entry.arguments?.getString("countryName") ?: "País")
 
-                val routeRendaMin = entry.arguments?.getString("rendaMin")?.takeIf { it.isNotBlank() }?.toFloatOrNull()
-                val routeRendaMax = entry.arguments?.getString("rendaMax")?.takeIf { it.isNotBlank() }?.toFloatOrNull()
+                val routeRendaMin = entry.arguments?.getString("rendaMin")
+                    ?.takeIf { it.isNotBlank() }
+                    ?.toFloatOrNull()
 
-                val currentStateHandle = navController.currentBackStackEntry?.savedStateHandle
+                val routeRendaMax = entry.arguments?.getString("rendaMax")
+                    ?.takeIf { it.isNotBlank() }
+                    ?.toFloatOrNull()
 
-                val rendaMin = currentStateHandle?.get<Float>("rendaMin") ?: routeRendaMin
-                val rendaMax = currentStateHandle?.get<Float>("rendaMax") ?: routeRendaMax
-                val pesoRenda = currentStateHandle?.get<Float>("pesoRenda")
-                    ?: (entry.arguments?.getFloat("pesoRenda") ?: 1f)
-                val pesoEscolas = currentStateHandle?.get<Float>("pesoEscolas")
-                    ?: (entry.arguments?.getFloat("pesoEscolas") ?: 1f)
-                val pesoHospitais = currentStateHandle?.get<Float>("pesoHospitais")
-                    ?: (entry.arguments?.getFloat("pesoHospitais") ?: 1f)
-                val pesoCriminalidade = currentStateHandle?.get<Float>("pesoCriminalidade")
-                    ?: (entry.arguments?.getFloat("pesoCriminalidade") ?: 1f)
+                val stateHandle = entry.savedStateHandle
+
+                val rendaMinFlow = stateHandle.getStateFlow<Float?>("rendaMin", routeRendaMin)
+                val rendaMaxFlow = stateHandle.getStateFlow<Float?>("rendaMax", routeRendaMax)
+                val pesoRendaFlow = stateHandle.getStateFlow(
+                    "pesoRenda",
+                    entry.arguments?.getFloat("pesoRenda") ?: 1f
+                )
+                val pesoEscolasFlow = stateHandle.getStateFlow(
+                    "pesoEscolas",
+                    entry.arguments?.getFloat("pesoEscolas") ?: 1f
+                )
+                val pesoHospitaisFlow = stateHandle.getStateFlow(
+                    "pesoHospitais",
+                    entry.arguments?.getFloat("pesoHospitais") ?: 1f
+                )
+                val pesoCriminalidadeFlow = stateHandle.getStateFlow(
+                    "pesoCriminalidade",
+                    entry.arguments?.getFloat("pesoCriminalidade") ?: 1f
+                )
+
+                val rendaMin by rendaMinFlow.collectAsState()
+                val rendaMax by rendaMaxFlow.collectAsState()
+                val pesoRenda by pesoRendaFlow.collectAsState()
+                val pesoEscolas by pesoEscolasFlow.collectAsState()
+                val pesoHospitais by pesoHospitaisFlow.collectAsState()
+                val pesoCriminalidade by pesoCriminalidadeFlow.collectAsState()
+
                 val saveToHistory = entry.arguments?.getBoolean("saveToHistory") ?: true
 
                 MapScreen(
@@ -199,6 +222,9 @@ fun AppNavigation() {
                     saveToHistory = saveToHistory,
                     onConfigureFiltersClick = {
                         navController.navigate(Routes.filters(countryCode, countryName))
+                    },
+                    onViewResultsClick = {
+                        navController.navigate(Routes.RESULTS)
                     }
                 )
             }

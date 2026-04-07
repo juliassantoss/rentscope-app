@@ -11,9 +11,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Button
@@ -50,7 +53,6 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Polygon
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
-
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -71,7 +73,8 @@ fun MapScreen(
     pesoHospitais: Float = 1f,
     pesoCriminalidade: Float = 1f,
     saveToHistory: Boolean = true,
-    onConfigureFiltersClick: () -> Unit = {}
+    onConfigureFiltersClick: () -> Unit = {},
+    onViewResultsClick: () -> Unit = {}
 ) {
     val center = LatLng(39.5, -8.0)
     val zoom = 6f
@@ -162,6 +165,8 @@ fun MapScreen(
         modifier = Modifier
             .padding(padding)
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .navigationBarsPadding()
             .padding(16.dp)
     ) {
         Button(
@@ -171,7 +176,10 @@ fun MapScreen(
         ) {
             Icon(Icons.Default.Tune, contentDescription = null)
             Spacer(Modifier.width(10.dp))
-            Text(stringResource(R.string.configure_filters), fontWeight = FontWeight.SemiBold)
+            Text(
+                text = stringResource(R.string.configure_filters),
+                fontWeight = FontWeight.SemiBold
+            )
         }
 
         Spacer(Modifier.height(14.dp))
@@ -253,7 +261,23 @@ fun MapScreen(
         }
 
         Spacer(Modifier.height(14.dp))
+
+        Button(
+            onClick = onViewResultsClick,
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.results),
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+
+        Spacer(Modifier.height(14.dp))
+
         LegendPiorMelhor()
+
+        Spacer(Modifier.height(110.dp))
     }
 }
 
@@ -277,7 +301,10 @@ private fun scoreToFillColor(score: Double): Color {
 private fun LegendPiorMelhor() {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(14.dp)) {
-            Text(stringResource(R.string.legend_title), fontWeight = FontWeight.SemiBold)
+            Text(
+                text = stringResource(R.string.legend_title),
+                fontWeight = FontWeight.SemiBold
+            )
 
             Spacer(Modifier.height(10.dp))
 

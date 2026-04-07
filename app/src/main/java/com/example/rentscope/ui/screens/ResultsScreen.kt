@@ -37,15 +37,17 @@ fun ResultsScreen(
 ) {
     val lastSearch = LastSearchManager.get()
 
-    LaunchedEffect(lastSearch) {
-        if (lastSearch != null && lastSearch.countryCode == "PT") {
+    LaunchedEffect(Unit) {
+        val currentLastSearch = LastSearchManager.get()
+
+        if (currentLastSearch != null && currentLastSearch.countryCode == "PT") {
             vm.carregarScores(
-                rendaMin = lastSearch.rendaMin,
-                rendaMax = lastSearch.rendaMax,
-                pesoRenda = lastSearch.pesoRenda,
-                pesoEscolas = lastSearch.pesoEscolas,
-                pesoHospitais = lastSearch.pesoHospitais,
-                pesoCriminalidade = lastSearch.pesoCriminalidade,
+                rendaMin = currentLastSearch.rendaMin,
+                rendaMax = currentLastSearch.rendaMax,
+                pesoRenda = currentLastSearch.pesoRenda,
+                pesoEscolas = currentLastSearch.pesoEscolas,
+                pesoHospitais = currentLastSearch.pesoHospitais,
+                pesoCriminalidade = currentLastSearch.pesoCriminalidade,
                 limite = 10
             )
         }
@@ -63,56 +65,67 @@ fun ResultsScreen(
             fontWeight = FontWeight.Bold
         )
 
-        Spacer(Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = stringResource(R.string.results_subtitle),
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         if (lastSearch == null) {
             EmptyStateCard(
                 title = stringResource(R.string.no_results_title),
                 message = stringResource(R.string.no_results_message)
             )
-            return
-        }
+        } else {
+            LastSearchSummaryCard(
+                data = lastSearch,
+                onOpenMapClick = { onOpenMapClick(lastSearch) }
+            )
 
-        LastSearchSummaryCard(
-            data = lastSearch,
-            onOpenMapClick = { onOpenMapClick(lastSearch) }
-        )
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Spacer(Modifier.height(16.dp))
+            when {
+                lastSearch.countryCode != "PT" -> {
+                    EmptyStateCard(
+                        title = stringResource(R.string.no_data_title),
+                        message = "De momento, os resultados detalhados estão disponíveis apenas para Portugal."
+                    )
+                }
 
-        when {
-            vm.isLoading -> {
-                EmptyStateCard(
-                    title = stringResource(R.string.loading_results_title),
-                    message = stringResource(R.string.loading_results_message)
-                )
-            }
+                vm.isLoading -> {
+                    EmptyStateCard(
+                        title = stringResource(R.string.loading_results_title),
+                        message = stringResource(R.string.loading_results_message)
+                    )
+                }
 
-            !vm.errorMessage.isNullOrBlank() -> {
-                EmptyStateCard(
-                    title = stringResource(R.string.error_loading_results_title),
-                    message = vm.errorMessage ?: stringResource(R.string.unexpected_error)
-                )
-            }
+                !vm.errorMessage.isNullOrBlank() -> {
+                    EmptyStateCard(
+                        title = stringResource(R.string.error_loading_results_title),
+                        message = vm.errorMessage ?: stringResource(R.string.unexpected_error)
+                    )
+                }
 
-            vm.municipios.isEmpty() -> {
-                EmptyStateCard(
-                    title = stringResource(R.string.no_data_title),
-                    message = stringResource(R.string.no_data_message)
-                )
-            }
+                vm.municipios.isEmpty() -> {
+                    EmptyStateCard(
+                        title = stringResource(R.string.no_data_title),
+                        message = stringResource(R.string.no_data_message)
+                    )
+                }
 
-            else -> {
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    items(vm.municipios.take(10), key = { it.codigoMunicipio }) { item ->
-                        ResultCityCard(item = item)
+                else -> {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(
+                            items = vm.municipios.take(10),
+                            key = { it.codigoMunicipio }
+                        ) { item ->
+                            ResultCityCard(item = item)
+                        }
                     }
                 }
             }
@@ -137,7 +150,7 @@ private fun LastSearchSummaryCard(
                 fontWeight = FontWeight.SemiBold
             )
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(text = stringResource(R.string.country_label, data.countryName))
             Text(
@@ -157,13 +170,13 @@ private fun LastSearchSummaryCard(
                 )
             )
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             Button(
                 onClick = onOpenMapClick,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(stringResource(R.string.open_map_for_search))
+                Text(text = stringResource(R.string.open_map_for_search))
             }
         }
     }
@@ -183,17 +196,22 @@ private fun ResultCityCard(item: ScoreMunicipioDto) {
                 fontWeight = FontWeight.SemiBold
             )
 
-            Spacer(Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
             Text(
                 text = "${item.regiao} • ${item.grandeRegiao}",
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(text = stringResource(R.string.score_label, format1(item.score)))
-            Text(text = stringResource(R.string.city_rent_label, item.valorMedioM2?.let { format1(it) } ?: "-"))
+            Text(
+                text = stringResource(
+                    R.string.city_rent_label,
+                    item.valorMedioM2?.let { format1(it) } ?: "-"
+                )
+            )
             Text(text = stringResource(R.string.schools_label, item.totalEscolas))
             Text(text = stringResource(R.string.hospitals_label, item.totalHospitais))
             Text(text = stringResource(R.string.crime_label, item.totalCrimes))
@@ -202,4 +220,5 @@ private fun ResultCityCard(item: ScoreMunicipioDto) {
 }
 
 private fun format1(value: Float): String = String.format(Locale.US, "%.1f", value)
+
 private fun formatNullable(value: Float?): String = value?.let { format1(it) } ?: "-"
