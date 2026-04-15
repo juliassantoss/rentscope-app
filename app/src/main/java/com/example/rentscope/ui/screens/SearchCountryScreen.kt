@@ -45,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.rentscope.R
+import com.example.rentscope.ui.viewmodel.MunicipioViewModel
 import com.example.rentscope.ui.viewmodel.PaisesViewModel
 
 private val BrandBlue = Color(0xFF2F86D6)
@@ -62,26 +63,31 @@ fun CountrySearchScreen(
     onCountryClick: (CountryUi) -> Unit = {}
 ) {
     val vm: PaisesViewModel = viewModel()
+    val municipioVm: MunicipioViewModel = viewModel()
     val state by vm.state.collectAsState()
 
     LaunchedEffect(continent) {
         vm.carregarPaises()
+        municipioVm.load()
     }
 
     var query by remember { mutableStateOf("") }
 
-    val regionsAvailablePlaceholder = stringResource(R.string.regions_available_placeholder)
+    val regionsAvailableText = stringResource(
+        R.string.regions_available_count,
+        municipioVm.municipios.size
+    )
     val searchCountryPlaceholder = stringResource(R.string.search_country_placeholder)
     val loadingCountriesText = stringResource(R.string.loading_countries)
     val tryAgainText = stringResource(R.string.try_again)
 
-    val allCountries = remember(state.paises, regionsAvailablePlaceholder) {
+    val allCountries = remember(state.paises, regionsAvailableText) {
         state.paises
             .map { dto ->
                 CountryUi(
                     code = dto.codigo,
                     name = dto.nome,
-                    regionsAvailableText = regionsAvailablePlaceholder
+                    regionsAvailableText = regionsAvailableText
                 )
             }
             .sortedBy { it.name }

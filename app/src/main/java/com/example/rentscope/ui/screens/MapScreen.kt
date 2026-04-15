@@ -13,8 +13,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -24,6 +26,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,7 +35,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -56,10 +58,14 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-private val LightBlue = Color(0xFFBBDEFB)
-private val DarkBlue = Color(0xFF0D47A1)
+private val ChoroplethColors = listOf(
+    Color(0xFFE3F2FD),
+    Color(0xFF90CAF9),
+    Color(0xFF42A5F5),
+    Color(0xFF1976D2),
+    Color(0xFF0D47A1)
+)
 private val BorderColor = Color(0xFF1E1E1E)
-private val HeaderBlue = Color(0xFF2F86D6)
 
 @Composable
 fun MapScreen(
@@ -169,6 +175,10 @@ fun MapScreen(
             .navigationBarsPadding()
             .padding(16.dp)
     ) {
+        FilterMapHelp()
+
+        Spacer(Modifier.height(10.dp))
+
         Button(
             onClick = onConfigureFiltersClick,
             modifier = Modifier.fillMaxWidth(),
@@ -180,26 +190,6 @@ fun MapScreen(
                 text = stringResource(R.string.configure_filters),
                 fontWeight = FontWeight.SemiBold
             )
-        }
-
-        Spacer(Modifier.height(14.dp))
-
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(14.dp),
-            colors = CardDefaults.cardColors(containerColor = HeaderBlue)
-        ) {
-            Column(Modifier.padding(16.dp)) {
-                Text(
-                    text = stringResource(R.string.map_preferences_title),
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = countryName,
-                    color = Color.White.copy(alpha = 0.9f)
-                )
-            }
         }
 
         Spacer(Modifier.height(14.dp))
@@ -281,6 +271,80 @@ fun MapScreen(
     }
 }
 
+@Composable
+private fun FilterMapHelp() {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFFEAF5FF)
+        )
+    ) {
+        Column(Modifier.padding(14.dp)) {
+            Text(
+                text = stringResource(R.string.map_filter_help_title),
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF075985)
+            )
+
+            Spacer(Modifier.height(4.dp))
+
+            Text(
+                text = stringResource(R.string.map_filter_help_body),
+                style = MaterialTheme.typography.bodySmall,
+                color = Color(0xFF164E63)
+            )
+
+            Spacer(Modifier.height(12.dp))
+
+            HelpStep(
+                number = "1",
+                text = stringResource(R.string.map_filter_help_step_map)
+            )
+
+            Spacer(Modifier.height(8.dp))
+
+            HelpStep(
+                number = "2",
+                text = stringResource(R.string.map_filter_help_step_results)
+            )
+        }
+    }
+}
+
+@Composable
+private fun HelpStep(
+    number: String,
+    text: String
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            modifier = Modifier
+                .size(24.dp)
+                .clip(CircleShape)
+                .background(Color(0xFF0369A1)),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = number,
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+        }
+
+        Spacer(Modifier.width(10.dp))
+
+        Text(
+            text = text,
+            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.bodySmall,
+            color = Color(0xFF0F172A)
+        )
+    }
+}
+
 private fun toGeoJsonMunicipalityCode(codigoMunicipio: Int): String {
     return codigoMunicipio
         .toString()
@@ -290,11 +354,11 @@ private fun toGeoJsonMunicipalityCode(codigoMunicipio: Int): String {
 
 private fun scoreToFillColor(score: Double): Color {
     val normalized = score.coerceIn(0.0, 1.0).toFloat()
-    return androidx.compose.ui.graphics.lerp(
-        LightBlue,
-        DarkBlue,
-        normalized
-    ).copy(alpha = 0.78f)
+    val colorIndex = (normalized * ChoroplethColors.lastIndex)
+        .toInt()
+        .coerceIn(0, ChoroplethColors.lastIndex)
+
+    return ChoroplethColors[colorIndex].copy(alpha = 0.92f)
 }
 
 @Composable
@@ -317,12 +381,18 @@ private fun LegendPiorMelhor() {
                         .weight(1f)
                         .height(10.dp)
                         .clip(RoundedCornerShape(999.dp))
-                        .background(
-                            Brush.horizontalGradient(
-                                listOf(LightBlue, DarkBlue)
+                ) {
+                    Row(Modifier.fillMaxSize()) {
+                        ChoroplethColors.forEach { color ->
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxSize()
+                                    .background(color)
                             )
-                        )
-                )
+                        }
+                    }
+                }
 
                 Spacer(Modifier.width(12.dp))
                 Text(stringResource(R.string.higher_fit))

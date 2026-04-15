@@ -62,12 +62,12 @@ fun HomeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(padding)
+            .padding(top = 112.dp)
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(Modifier.height(20.dp))
+        Spacer(Modifier.height(14.dp))
 
         Text(
             text = stringResource(R.string.home_title),
@@ -84,38 +84,38 @@ fun HomeScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(12.dp))
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(22.dp),
+            shape = RoundedCornerShape(18.dp),
             colors = CardDefaults.cardColors(containerColor = Color(0xFFEFF5FF)),
-            elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
             Column(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 14.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 MascotOrb(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(150.dp),
-                    orbSize = 132.dp,
+                        .height(136.dp),
+                    orbSize = 122.dp,
                     state = MascotState.IDLE
                 )
 
                 Spacer(Modifier.height(10.dp))
 
                 Card(
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(14.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
                     elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                 ) {
                     Text(
-                        text = "Olá! Posso ajudar-te com dúvidas sobre viver num local, custo de vida e muito mais 👀",
-                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
+                        text = stringResource(R.string.home_mascot_message),
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 9.dp),
                         textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                 }
@@ -124,29 +124,32 @@ fun HomeScreen(
 
                 Button(
                     onClick = onOpenAssistant,
+                    modifier = Modifier.height(40.dp),
                     shape = RoundedCornerShape(14.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = BrandBlue)
+                    colors = ButtonDefaults.buttonColors(containerColor = BrandBlue),
+                    contentPadding = PaddingValues(horizontal = 18.dp)
                 ) {
                     Text(
-                        text = "Falar com assistente",
+                        text = stringResource(R.string.home_assistant_button),
                         color = Color.White,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
+                        style = MaterialTheme.typography.bodySmall
                     )
                 }
 
-                Spacer(Modifier.height(18.dp))
+                Spacer(Modifier.height(14.dp))
 
                 AlignStartTitle(stringResource(R.string.home_select_continent_label))
 
-                Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(8.dp))
 
                 Column(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         ContinentChip(
                             text = europe,
@@ -164,7 +167,7 @@ fun HomeScreen(
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         ContinentChip(
                             text = americas,
@@ -182,7 +185,7 @@ fun HomeScreen(
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         ContinentChip(
                             text = oceania,
@@ -199,13 +202,13 @@ fun HomeScreen(
                     }
                 }
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(12.dp))
 
                 Button(
                     onClick = { onContinue(selectedContinent) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(52.dp),
+                        .height(48.dp),
                     shape = RoundedCornerShape(14.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = BrandBlue)
                 ) {
@@ -221,10 +224,12 @@ fun HomeScreen(
                         tint = Color.White
                     )
                 }
+
+                Spacer(Modifier.height(18.dp))
             }
         }
 
-        Spacer(Modifier.height(100.dp))
+        Spacer(Modifier.height(8.dp))
     }
 }
 
@@ -251,7 +256,7 @@ private fun ContinentChip(
     val border = if (selected) null else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
 
     Surface(
-        modifier = modifier.height(48.dp),
+        modifier = modifier.height(44.dp),
         shape = RoundedCornerShape(14.dp),
         color = container,
         contentColor = content,
@@ -261,20 +266,20 @@ private fun ContinentChip(
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 14.dp),
+                .padding(horizontal = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
             Icon(
                 imageVector = Icons.Filled.Public,
                 contentDescription = null,
-                modifier = Modifier.size(18.dp),
+                modifier = Modifier.size(16.dp),
                 tint = content
             )
-            Spacer(Modifier.width(8.dp))
+            Spacer(Modifier.width(6.dp))
             Text(
                 text = text,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
                 fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium
             )
         }

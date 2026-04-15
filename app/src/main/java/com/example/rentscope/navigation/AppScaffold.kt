@@ -151,18 +151,18 @@ fun AppScaffold(
                         Box(
                             modifier = Modifier
                                 .navigationBarsPadding()
-                                .padding(horizontal = 20.dp, vertical = 12.dp),
+                                .padding(horizontal = 16.dp, vertical = 10.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Card(
-                                shape = RoundedCornerShape(28.dp),
+                                shape = RoundedCornerShape(24.dp),
                                 colors = CardDefaults.cardColors(
                                     containerColor = Color.White.copy(alpha = 0.96f)
                                 ),
-                                elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
+                                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                             ) {
                                 Row(
-                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp)
                                 ) {
                                     NavigationBarItem(
                                         selected = currentDestination.isRouteSelected(Routes.LANGUAGE),
@@ -171,7 +171,7 @@ fun AppScaffold(
                                             Icon(
                                                 Icons.Filled.Language,
                                                 contentDescription = stringResource(R.string.language),
-                                                modifier = Modifier.size(22.dp)
+                                                modifier = Modifier.size(20.dp)
                                             )
                                         },
                                         label = { Text(stringResource(R.string.language)) },
@@ -191,7 +191,7 @@ fun AppScaffold(
                                             Icon(
                                                 Icons.Filled.Home,
                                                 contentDescription = stringResource(R.string.home),
-                                                modifier = Modifier.size(22.dp)
+                                                modifier = Modifier.size(20.dp)
                                             )
                                         },
                                         label = { Text(stringResource(R.string.home)) },
@@ -211,7 +211,7 @@ fun AppScaffold(
                                             Icon(
                                                 Icons.AutoMirrored.Filled.ShowChart,
                                                 contentDescription = stringResource(R.string.results),
-                                                modifier = Modifier.size(22.dp)
+                                                modifier = Modifier.size(20.dp)
                                             )
                                         },
                                         label = { Text(stringResource(R.string.results)) },

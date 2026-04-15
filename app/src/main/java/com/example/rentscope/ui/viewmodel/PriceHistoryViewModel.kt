@@ -24,14 +24,19 @@ class PriceHistoryViewModel : ViewModel() {
         viewModelScope.launch {
             loading = true
             error = null
+            data = emptyList()
 
             val result = PriceHistoryRepository.getHistorico(codigo)
 
             loading = false
 
             result
-                .onSuccess { data = it }
-                .onFailure { error = it.message ?: "Erro ao carregar histórico de preços." }
+                .onSuccess {
+                    data = it
+                }
+                .onFailure {
+                    error = it.message ?: "Erro ao carregar histórico de preços."
+                }
         }
     }
 }

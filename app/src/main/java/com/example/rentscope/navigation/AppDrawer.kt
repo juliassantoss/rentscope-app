@@ -12,16 +12,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.ShowChart
 import androidx.compose.material.icons.filled.StarBorder
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -43,6 +45,12 @@ fun AppDrawer(
     onAuthClick: () -> Unit,
     onItemClick: (String) -> Unit
 ) {
+    val drawerItemColors = NavigationDrawerItemDefaults.colors(
+        unselectedContainerColor = Color.Transparent,
+        unselectedIconColor = Color(0xFF334155),
+        unselectedTextColor = Color(0xFF1F2937)
+    )
+
     ModalDrawerSheet {
         Box(
             modifier = Modifier
@@ -55,7 +63,7 @@ fun AppDrawer(
                         )
                     )
                 )
-                .padding(20.dp)
+                .padding(18.dp)
         ) {
             Column {
                 Row(
@@ -124,37 +132,47 @@ fun AppDrawer(
             }
         }
 
+        Spacer(modifier = Modifier.height(8.dp))
+
         NavigationDrawerItem(
             label = { Text(stringResource(R.string.favorites)) },
             selected = false,
             onClick = { onItemClick(Routes.FAVORITES) },
-            icon = { Icon(Icons.Default.StarBorder, contentDescription = null) }
+            icon = { Icon(Icons.Default.StarBorder, contentDescription = null) },
+            colors = drawerItemColors,
+            modifier = Modifier.padding(horizontal = 10.dp)
         )
 
         NavigationDrawerItem(
             label = { Text(stringResource(R.string.search_history)) },
             selected = false,
             onClick = { onItemClick(Routes.HISTORY) },
-            icon = { Icon(Icons.Default.AccessTime, contentDescription = null) }
+            icon = { Icon(Icons.Default.AccessTime, contentDescription = null) },
+            colors = drawerItemColors,
+            modifier = Modifier.padding(horizontal = 10.dp)
         )
 
         NavigationDrawerItem(
             label = { Text(stringResource(R.string.price_history)) },
             selected = false,
             onClick = { onItemClick(Routes.PRICE_HISTORY) },
-            icon = { Icon(Icons.Default.ShowChart, contentDescription = null) }
+            icon = { Icon(Icons.AutoMirrored.Filled.ShowChart, contentDescription = null) },
+            colors = drawerItemColors,
+            modifier = Modifier.padding(horizontal = 10.dp)
         )
 
         NavigationDrawerItem(
-            label = { Text("Assistente IA") },
+            label = { Text(stringResource(R.string.ai_assistant_title)) },
             selected = false,
             onClick = { onItemClick(Routes.AI_ASSISTANT) },
-            icon = { Icon(Icons.Default.ShowChart, contentDescription = null) }
+            icon = { Icon(Icons.Default.AutoAwesome, contentDescription = null) },
+            colors = drawerItemColors,
+            modifier = Modifier.padding(horizontal = 10.dp)
         )
 
         Spacer(modifier = Modifier.weight(1f))
 
-        Divider()
+        HorizontalDivider()
 
         Text(
             text = stringResource(R.string.version_label),

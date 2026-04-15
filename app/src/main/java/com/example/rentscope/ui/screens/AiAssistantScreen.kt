@@ -1,9 +1,7 @@
 package com.example.rentscope.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -11,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -20,26 +19,21 @@ import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.DeleteOutline
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -49,11 +43,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.rentscope.data.local.LastSearchManager
-import com.example.rentscope.ui.components.MascotOrb
 import com.example.rentscope.ui.viewmodel.AiViewModel
 
 @Composable
@@ -76,13 +68,6 @@ fun AiAssistantScreen(
         )
     }
 
-    val mascotMessage = when {
-        aiViewModel.loading -> "Estou a analisar a tua pergunta..."
-        aiViewModel.error != null -> "Algo correu mal. Vamos tentar outra vez?"
-        aiViewModel.messages.size > 1 -> "Continua. Posso responder a mais dúvidas sobre o app e os locais."
-        else -> "Pergunta qualquer coisa relacionada ao RentScope."
-    }
-
     LaunchedEffect(aiViewModel.messages.size) {
         if (aiViewModel.messages.isNotEmpty()) {
             listState.animateScrollToItem(aiViewModel.messages.lastIndex)
@@ -94,49 +79,6 @@ fun AiAssistantScreen(
             .fillMaxSize()
             .padding(padding)
     ) {
-        ElevatedCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-                .animateContentSize(),
-            colors = CardDefaults.elevatedCardColors(
-                containerColor = MaterialTheme.colorScheme.surface
-            )
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 18.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                MascotOrb(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .size(150.dp),
-                    orbSize = 130.dp,
-                    state = aiViewModel.mascotState
-                )
-
-                Spacer(modifier = Modifier.size(12.dp))
-
-                Surface(
-                    shape = MaterialTheme.shapes.large,
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.10f)
-                ) {
-                    Text(
-                        text = mascotMessage,
-                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-
-                Spacer(modifier = Modifier.size(12.dp))
-
-
-            }
-        }
-
         if (aiViewModel.loading) {
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         }
@@ -147,6 +89,7 @@ fun AiAssistantScreen(
                 .weight(1f)
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp),
+            contentPadding = PaddingValues(bottom = 8.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             item {
@@ -190,39 +133,38 @@ fun AiAssistantScreen(
             }
         }
 
-        HorizontalDivider()
-
-        Row(
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp)
                 .navigationBarsPadding(),
-            verticalAlignment = Alignment.Bottom
+            tonalElevation = 3.dp,
+            color = MaterialTheme.colorScheme.surface
         ) {
-            OutlinedTextField(
-                value = pergunta,
-                onValueChange = { pergunta = it },
-                modifier = Modifier.weight(1f),
-                placeholder = {
-                    Text("Pergunta sobre municípios, score, filtros, mapa, preços...")
-                },
-                minLines = 1,
-                maxLines = 5
-            )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Column(
-                verticalArrangement = Arrangement.spacedBy(6.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(
-                    onClick = { aiViewModel.clearConversation() }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.DeleteOutline,
-                        contentDescription = "Limpar conversa"
-                    )
-                }
+                OutlinedTextField(
+                    value = pergunta,
+                    onValueChange = { pergunta = it },
+                    modifier = Modifier
+                        .weight(1f)
+                        .heightIn(min = 48.dp, max = 104.dp),
+                    placeholder = {
+                        Text(
+                            text = "Pergunta para o Scopey...",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    },
+                    textStyle = MaterialTheme.typography.bodyMedium,
+                    minLines = 1,
+                    maxLines = 3,
+                    shape = RoundedCornerShape(16.dp)
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
 
                 Button(
                     onClick = {
@@ -232,7 +174,10 @@ fun AiAssistantScreen(
                             pergunta = ""
                         }
                     },
-                    enabled = pergunta.isNotBlank() && !aiViewModel.loading
+                    enabled = pergunta.isNotBlank() && !aiViewModel.loading,
+                    modifier = Modifier.size(48.dp),
+                    contentPadding = PaddingValues(0.dp),
+                    shape = RoundedCornerShape(16.dp)
                 ) {
                     if (aiViewModel.loading) {
                         CircularProgressIndicator(
@@ -241,7 +186,7 @@ fun AiAssistantScreen(
                         )
                     } else {
                         Icon(
-                            imageVector = Icons.Default.Send,
+                            imageVector = Icons.AutoMirrored.Filled.Send,
                             contentDescription = "Enviar"
                         )
                     }
@@ -250,7 +195,6 @@ fun AiAssistantScreen(
         }
     }
 }
-
 
 @Composable
 private fun QuickQuestionsRow(
@@ -292,32 +236,47 @@ private fun ChatBubble(
     text: String,
     isUser: Boolean
 ) {
-    Box(
+    Row(
         modifier = Modifier.fillMaxWidth(),
-        contentAlignment = if (isUser) Alignment.CenterEnd else Alignment.CenterStart
+        horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start,
+        verticalAlignment = Alignment.Bottom
     ) {
-        Card(
-            colors = CardDefaults.cardColors(
-                containerColor = if (isUser) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.surfaceVariant
-                }
+        if (!isUser) {
+            com.example.rentscope.ui.components.MascotOrb(
+                modifier = Modifier.size(34.dp),
+                orbSize = 32.dp
+            )
+
+            Spacer(modifier = Modifier.width(4.dp))
+        }
+
+        Surface(
+            color = if (isUser) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.surfaceVariant
+            },
+            shape = RoundedCornerShape(
+                topStart = if (isUser) 18.dp else 6.dp,
+                topEnd = if (isUser) 6.dp else 18.dp,
+                bottomEnd = 18.dp,
+                bottomStart = 18.dp
             ),
-            modifier = Modifier.fillMaxWidth(0.82f)
+            shadowElevation = 1.dp,
+            modifier = Modifier.fillMaxWidth(0.78f)
         ) {
-            Column(modifier = Modifier.padding(12.dp)) {
+            Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 9.dp)) {
                 Text(
-                    text = if (isUser) "Tu" else "Assistente",
-                    style = MaterialTheme.typography.labelMedium,
+                    text = if (isUser) "Você" else "Scopey",
+                    style = MaterialTheme.typography.labelSmall,
                     color = if (isUser) {
-                        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f)
+                        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.78f)
                     } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
+                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.78f)
                     }
                 )
 
-                Spacer(modifier = Modifier.size(4.dp))
+                Spacer(modifier = Modifier.size(3.dp))
 
                 Text(
                     text = text,
@@ -328,20 +287,6 @@ private fun ChatBubble(
                     },
                     style = MaterialTheme.typography.bodyMedium
                 )
-
-                if (!isUser) {
-                    Spacer(modifier = Modifier.size(6.dp))
-                    Row {
-                        TextButton(onClick = {}) {
-                            Icon(
-                                imageVector = Icons.Default.Refresh,
-                                contentDescription = null
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("Resposta IA")
-                        }
-                    }
-                }
             }
         }
     }

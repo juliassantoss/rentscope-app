@@ -13,6 +13,7 @@
 
     <string name="favorites">Favorites</string>
     <string name="search_history">Search History</string>
+    <string name="ai_assistant_title">AI Assistant</string>
     <string name="available_countries">Available Countries</string>
     <string name="compare_regions">Compare Regions</string>
     <string name="settings">Settings</string>
@@ -28,10 +29,15 @@
     <string name="language_title">Language</string>
     <string name="language_subtitle">Choose the application language.</string>
     <string name="language_apply">Apply language</string>
+    <string name="language_portuguese">Portuguese</string>
+    <string name="language_english">English</string>
+    <string name="language_spanish">Spanish</string>
 
     <!-- Home -->
     <string name="home_title">Welcome to RentScope</string>
     <string name="home_subtitle">Discover the best places to live</string>
+    <string name="home_mascot_message">Hi! I can help with questions about places to live, cost of living, and more.</string>
+    <string name="home_assistant_button">Talk to assistant</string>
     <string name="home_select_continent_card">Select a continent to start your search</string>
     <string name="home_select_continent_label">Select the continent</string>
     <string name="continue_button">Continue</string>
@@ -62,16 +68,18 @@
     <string name="filters_title">Filters — %1$s</string>
     <string name="filters_intro">All municipalities remain on the map. Filters adjust how suitable each one is.</string>
 
-    <string name="rent_min_title">Minimum rent (€ / m²)</string>
-    <string name="rent_min_subtitle">Desired minimum rent per m².</string>
+    <string name="rent_min_title">Minimum rent</string>
+    <string name="rent_min_subtitle">Lowest rent level included in the calculation.</string>
 
-    <string name="rent_max_title">Maximum rent (€ / m²)</string>
-    <string name="rent_max_subtitle">Desired maximum rent per m².</string>
+    <string name="rent_max_title">Maximum rent</string>
+    <string name="rent_max_subtitle">Highest rent level included in the calculation.</string>
+    <string name="rent_scale_title">Rent scale: 0 to 20</string>
+    <string name="rent_scale_body">This is not a price in euros. It is an internal scale: 0 means lower rent and 20 means higher rent. The score considers municipalities inside the selected range.</string>
 
     <string name="filters_weights_title">Criteria importance</string>
 
     <string name="weight_rent_title">Rent weight</string>
-    <string name="weight_rent_subtitle">How much rent affects the score.</string>
+    <string name="weight_rent_subtitle">How much the normalized rent interval affects the score.</string>
 
     <string name="weight_schools_title">Schools weight</string>
     <string name="weight_schools_subtitle">How much schools affect the score.</string>
@@ -83,7 +91,7 @@
     <string name="weight_crime_subtitle">How much crime affects the score.</string>
 
     <string name="filters_summary_title">Filters summary</string>
-    <string name="filters_summary_rent">Rent: %1$s to %2$s €/m²</string>
+    <string name="filters_summary_rent">Normalized rent: %1$s to %2$s / 20</string>
     <string name="filters_summary_weights">Weights — Rent: %1$s | Schools: %2$s | Hospitals: %3$s | Crime: %4$s</string>
 
     <string name="apply_filters">Apply filters</string>
@@ -91,7 +99,11 @@
     <!-- Map -->
     <string name="configure_filters">Configure Filters</string>
     <string name="map_preferences_title">Map Based on Preferences</string>
-    <string name="loading_real_data">Loading real data...</string>
+    <string name="loading_real_data">Loading data...</string>
+    <string name="map_filter_help_title">Configure the filters</string>
+    <string name="map_filter_help_body">Set your preferences to see the map and the cities most compatible with you.</string>
+    <string name="map_filter_help_step_map">The map shows fit by color.</string>
+    <string name="map_filter_help_step_results">Results lists the most compatible cities.</string>
 
     <string name="legend_title">Legend</string>
     <string name="lower_fit">Lower fit</string>
@@ -116,7 +128,7 @@
     <string name="favorite_action">Favorite</string>
     <string name="remove_action">Remove</string>
 
-    <string name="rent_range_label">Rent: %1$s to %2$s €/m²</string>
+    <string name="rent_range_label">Normalized rent: %1$s to %2$s / 20</string>
     <string name="weights_summary_generic">Weights — Rent: %1$s | Schools: %2$s | Hospitals: %3$s | Crime: %4$s</string>
 
     <string name="open_again">Open again</string>
@@ -124,6 +136,7 @@
 
     <!-- Results -->
     <string name="results_subtitle">Top 10 cities based on your last search.</string>
+    <string name="results_portugal_only">Detailed results are currently available only for Portugal.</string>
 
     <string name="no_results_title">No results yet</string>
     <string name="no_results_message">Run a search to see results here.</string>
@@ -145,12 +158,17 @@
 
     <string name="score_label">Score: %1$s</string>
     <string name="city_rent_label">Rent: %1$s €/m²</string>
+    <string name="rent_label_short">Rent</string>
     <string name="schools_label">Schools: %1$s</string>
+    <string name="schools_label_short">Schools</string>
     <string name="hospitals_label">Hospitals: %1$s</string>
+    <string name="hospitals_label_short">Hospitals</string>
     <string name="crime_label">Crime: %1$s</string>
+    <string name="crime_label_short">Crimes</string>
 
     <!-- Countries -->
     <string name="regions_available_placeholder">Available regions</string>
+    <string name="regions_available_count">%1$d municipalities available</string>
     <string name="search_country_placeholder">Search country...</string>
     <string name="loading_countries">Loading countries...</string>
     <string name="error_loading_countries">Error loading countries: %1$s</string>

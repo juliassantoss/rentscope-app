@@ -242,7 +242,7 @@ fun AppNavigation() {
                 val previousStateHandle = navController.previousBackStackEntry?.savedStateHandle
 
                 val rendaMin = previousStateHandle?.get<Float>("rendaMin") ?: 0f
-                val rendaMax = previousStateHandle?.get<Float>("rendaMax") ?: 15f
+                val rendaMax = previousStateHandle?.get<Float>("rendaMax") ?: 20f
                 val pesoRenda = previousStateHandle?.get<Float>("pesoRenda") ?: 1f
                 val pesoEscolas = previousStateHandle?.get<Float>("pesoEscolas") ?: 1f
                 val pesoHospitais = previousStateHandle?.get<Float>("pesoHospitais") ?: 1f

@@ -1,0 +1,152 @@
+<resources>
+    <string name="app_name">RentScope</string>
+    <string name="app_title">RentScope</string>
+
+    <string name="back">Volver</string>
+    <string name="menu">Menú</string>
+    <string name="close">Cerrar</string>
+
+    <string name="language">Idioma</string>
+    <string name="home">Inicio</string>
+    <string name="results">Resultados</string>
+
+    <string name="favorites">Favoritos</string>
+    <string name="search_history">Historial de búsquedas</string>
+    <string name="ai_assistant_title">Asistente IA</string>
+    <string name="available_countries">Países disponibles</string>
+    <string name="compare_regions">Comparar regiones</string>
+    <string name="settings">Configuración</string>
+
+    <string name="session_started">Sesión iniciada</string>
+    <string name="welcome">Bienvenido</string>
+    <string name="explore_rentscope">Explora el mundo con RentScope</string>
+    <string name="logout">Cerrar sesión</string>
+    <string name="login">Iniciar sesión</string>
+    <string name="version_label">Versión 1.0.0</string>
+
+    <string name="language_title">Idioma</string>
+    <string name="language_subtitle">Elige el idioma de la aplicación.</string>
+    <string name="language_apply">Aplicar idioma</string>
+    <string name="language_portuguese">Portugués</string>
+    <string name="language_english">Inglés</string>
+    <string name="language_spanish">Español</string>
+
+    <string name="home_title">Bienvenido a RentScope</string>
+    <string name="home_subtitle">Descubre los mejores lugares para vivir</string>
+    <string name="home_mascot_message">¡Hola! Puedo ayudarte con dudas sobre lugares para vivir, coste de vida y más.</string>
+    <string name="home_assistant_button">Hablar con asistente</string>
+    <string name="home_select_continent_card">Selecciona un continente para empezar\nla búsqueda</string>
+    <string name="home_select_continent_label">Selecciona el continente</string>
+    <string name="continue_button">Continuar</string>
+
+    <string name="continent_europe">Europa</string>
+    <string name="continent_asia">Asia</string>
+    <string name="continent_americas">Américas</string>
+    <string name="continent_africa">África</string>
+    <string name="continent_oceania">Oceanía</string>
+    <string name="continent_antarctica">Antártida</string>
+
+    <string name="login_title">Entrar</string>
+    <string name="login_subtitle">Accede a tu cuenta de RentScope</string>
+    <string name="email_label">Correo electrónico</string>
+    <string name="password_label">Contraseña</string>
+    <string name="forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="no_account_yet">¿Aún no tienes cuenta? </string>
+    <string name="create_account_action">Crear cuenta</string>
+    <string name="already_have_account">¿Ya tienes cuenta? </string>
+    <string name="create_account_title">Crear cuenta</string>
+    <string name="create_account_subtitle">Crea tu cuenta de RentScope</string>
+    <string name="confirm_password_label">Confirmar contraseña</string>
+
+    <string name="filters_title">Filtros — %1$s</string>
+    <string name="filters_intro">Todos los municipios siguen en el mapa. Los filtros y pesos ajustan el grado de adecuación de cada uno.</string>
+    <string name="rent_min_title">Renta mínima</string>
+    <string name="rent_min_subtitle">Nivel de renta más bajo incluido en el cálculo.</string>
+    <string name="rent_max_title">Renta máxima</string>
+    <string name="rent_max_subtitle">Nivel de renta más alto incluido en el cálculo.</string>
+    <string name="rent_scale_title">Escala de renta: 0 a 20</string>
+    <string name="rent_scale_body">No es precio en euros. Es una escala interna: 0 indica renta más baja y 20 renta más alta. El score considera municipios dentro del intervalo elegido.</string>
+    <string name="filters_weights_title">Importancia de cada criterio</string>
+    <string name="weight_rent_title">Peso de la renta</string>
+    <string name="weight_rent_subtitle">Cuanto mayor sea, más valora el score los municipios dentro del intervalo normalizado de renta.</string>
+    <string name="weight_schools_title">Peso de las escuelas</string>
+    <string name="weight_schools_subtitle">Cuanto mayor sea, más valora el score la oferta de escuelas.</string>
+    <string name="weight_hospitals_title">Peso de los hospitales</string>
+    <string name="weight_hospitals_subtitle">Cuanto mayor sea, más valora el score la oferta de hospitales.</string>
+    <string name="weight_crime_title">Peso de la criminalidad</string>
+    <string name="weight_crime_subtitle">Cuanto mayor sea, más penaliza el score los municipios con mayor criminalidad.</string>
+    <string name="filters_summary_title">Resumen de filtros</string>
+    <string name="filters_summary_rent">Renta normalizada: %1$s hasta %2$s / 20</string>
+    <string name="filters_summary_weights">Pesos — Renta: %1$s | Escuelas: %2$s | Hospitales: %3$s | Criminalidad: %4$s</string>
+    <string name="apply_filters">Aplicar filtros</string>
+
+    <string name="configure_filters">Configurar filtros</string>
+    <string name="map_preferences_title">Mapa según las preferencias</string>
+    <string name="loading_real_data">Cargando datos...</string>
+    <string name="map_filter_help_title">Configura los filtros</string>
+    <string name="map_filter_help_body">Define tus preferencias para ver el mapa y las ciudades más compatibles contigo.</string>
+    <string name="map_filter_help_step_map">El mapa muestra la adecuación por color.</string>
+    <string name="map_filter_help_step_results">Resultados lista las ciudades más compatibles.</string>
+    <string name="legend_title">Leyenda</string>
+    <string name="lower_fit">Menor adecuación</string>
+    <string name="higher_fit">Mayor adecuación</string>
+
+    <string name="login_required_history">Debes iniciar sesión para acceder al historial de búsquedas.</string>
+    <string name="history_subtitle">Tus búsquedas guardadas aparecen aquí.</string>
+    <string name="no_saved_searches_title">Aún no hay búsquedas guardadas</string>
+    <string name="no_saved_searches_message">Después de aplicar filtros en el mapa con sesión iniciada, las búsquedas aparecerán aquí.</string>
+
+    <string name="login_required_favorites">Debes iniciar sesión para guardar y ver favoritos.</string>
+    <string name="favorites_subtitle">Tus búsquedas favoritas aparecen aquí.</string>
+    <string name="no_favorites_title">Aún no hay favoritos</string>
+    <string name="no_favorites_message">Marca una búsqueda como favorita en el historial para que aparezca aquí.</string>
+
+    <string name="code_label">Código: %1$s</string>
+    <string name="favorite_action">Añadir a favoritos</string>
+    <string name="remove_action">Eliminar</string>
+    <string name="rent_range_label">Renta normalizada: %1$s hasta %2$s / 20</string>
+    <string name="weights_summary_generic">Pesos — Renta: %1$s | Escuelas: %2$s | Hospitales: %3$s | Criminalidad: %4$s</string>
+    <string name="open_again">Ver de nuevo</string>
+    <string name="remove_from_favorites">Eliminar de favoritos</string>
+
+    <string name="results_subtitle">Top 10 ciudades con mejor adecuación según la última búsqueda.</string>
+    <string name="results_portugal_only">Por ahora, los resultados detallados están disponibles solo para Portugal.</string>
+    <string name="no_results_title">Aún no hay resultados</string>
+    <string name="no_results_message">Haz una búsqueda en el mapa para ver aquí las 10 mejores ciudades.</string>
+    <string name="loading_results_title">Cargando resultados</string>
+    <string name="loading_results_message">Estamos calculando las 10 mejores ciudades de la última búsqueda.</string>
+    <string name="error_loading_results_title">Error al cargar resultados</string>
+    <string name="unexpected_error">Error inesperado.</string>
+    <string name="no_data_title">Sin resultados</string>
+    <string name="no_data_message">No se han podido encontrar ciudades para esta búsqueda.</string>
+    <string name="last_search_title">Última búsqueda</string>
+    <string name="country_label">País: %1$s</string>
+    <string name="weights_summary_string">Pesos — Renta: %1$s | Escuelas: %2$s | Hospitales: %3$s | Criminalidad: %4$s</string>
+    <string name="open_map_for_search">Abrir mapa de esta búsqueda</string>
+    <string name="score_label">Score: %1$s</string>
+    <string name="city_rent_label">Renta: %1$s €/m²</string>
+    <string name="rent_label_short">Renta</string>
+    <string name="schools_label">Escuelas: %1$s</string>
+    <string name="schools_label_short">Escuelas</string>
+    <string name="hospitals_label">Hospitales: %1$s</string>
+    <string name="hospitals_label_short">Hospitales</string>
+    <string name="crime_label">Criminalidad: %1$s</string>
+    <string name="crime_label_short">Crímenes</string>
+
+    <string name="regions_available_placeholder">- regiones disponibles</string>
+    <string name="regions_available_count">%1$d municipios disponibles</string>
+    <string name="search_country_placeholder">Buscar país...</string>
+    <string name="loading_countries">Cargando países...</string>
+    <string name="error_loading_countries">Error al cargar países: %1$s</string>
+    <string name="try_again">Intentar de nuevo</string>
+    <string name="countries_found">%1$d países encontrados</string>
+
+    <string name="debug_countries_title">Debug /paises</string>
+    <string name="received_items">Elementos recibidos: %1$d</string>
+    <string name="loading">Cargando...</string>
+    <string name="error_with_message">Error: %1$s</string>
+    <string name="no_countries_returned">Ningún país fue devuelto por la API (lista vacía).</string>
+
+    <string name="price_history">Historial de precios</string>
+    <string name="search_municipality_label">Seleccionar municipio</string>
+</resources>

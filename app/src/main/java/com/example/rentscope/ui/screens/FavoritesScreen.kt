@@ -9,13 +9,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.rentscope.R
@@ -52,17 +51,10 @@ fun FavoritesScreen(
             .padding(padding)
             .padding(16.dp)
     ) {
-        Text(
-            text = stringResource(R.string.favorites),
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(Modifier.height(8.dp))
-
-        Text(
-            text = stringResource(R.string.favorites_subtitle),
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+        ScreenHeader(
+            title = stringResource(R.string.favorites),
+            subtitle = stringResource(R.string.favorites_subtitle),
+            icon = Icons.Filled.Star
         )
 
         Spacer(Modifier.height(16.dp))
@@ -73,7 +65,10 @@ fun FavoritesScreen(
                 message = stringResource(R.string.no_favorites_message)
             )
         } else {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(bottom = 24.dp)
+            ) {
                 items(vm.favoritos, key = { it.id }) { item ->
                     FavoriteItemCardRemote(
                         item = item,

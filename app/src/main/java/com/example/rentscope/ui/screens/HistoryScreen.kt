@@ -6,28 +6,21 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.StarBorder
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.rentscope.R
@@ -64,17 +57,10 @@ fun HistoryScreen(
             .padding(padding)
             .padding(16.dp)
     ) {
-        Text(
-            text = stringResource(R.string.search_history),
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(Modifier.height(8.dp))
-
-        Text(
-            text = stringResource(R.string.history_subtitle),
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+        ScreenHeader(
+            title = stringResource(R.string.search_history),
+            subtitle = stringResource(R.string.history_subtitle),
+            icon = Icons.Filled.AccessTime
         )
 
         Spacer(Modifier.height(16.dp))
@@ -85,7 +71,10 @@ fun HistoryScreen(
                 message = stringResource(R.string.no_saved_searches_message)
             )
         } else {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(bottom = 24.dp)
+            ) {
                 items(vm.historico, key = { it.id }) { item ->
                     HistoryItemCard(
                         item = item,
@@ -97,9 +86,7 @@ fun HistoryScreen(
                                 vm.adicionarFavorito(item.id)
                             }
                         },
-                        onDelete = {
-                            vm.removerFiltro(item.id)
-                        }
+                        onDelete = { vm.removerFiltro(item.id) }
                     )
                 }
             }
@@ -114,82 +101,26 @@ private fun HistoryItemCard(
     onToggleFavorite: () -> Unit,
     onDelete: () -> Unit
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Top,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = item.country_name,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        text = stringResource(R.string.code_label, item.country_code),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        text = item.criado_em,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+    SavedSearchCard(
+        item = item,
+        trailing = {
+            Row {
+                IconButton(onClick = onToggleFavorite) {
+                    Icon(
+                        imageVector = if (item.favorito) Icons.Filled.Star else Icons.Outlined.StarBorder,
+                        contentDescription = stringResource(R.string.favorite_action)
                     )
                 }
 
-                Row {
-                    IconButton(onClick = onToggleFavorite) {
-                        Icon(
-                            imageVector = if (item.favorito) Icons.Filled.Star else Icons.Outlined.StarBorder,
-                            contentDescription = stringResource(R.string.favorite_action)
-                        )
-                    }
-
-                    IconButton(onClick = onDelete) {
-                        Icon(
-                            imageVector = Icons.Filled.DeleteOutline,
-                            contentDescription = stringResource(R.string.remove_action)
-                        )
-                    }
+                IconButton(onClick = onDelete) {
+                    Icon(
+                        imageVector = Icons.Filled.DeleteOutline,
+                        contentDescription = stringResource(R.string.remove_action)
+                    )
                 }
             }
-
-            Spacer(Modifier.height(10.dp))
-
-            Text(
-                text = stringResource(R.string.rent_range_label, item.renda_min ?: "-", item.renda_max ?: "-"),
-                style = MaterialTheme.typography.bodyMedium
-            )
-
-            Spacer(Modifier.height(4.dp))
-
-            Text(
-                text = stringResource(
-                    R.string.weights_summary_generic,
-                    item.peso_renda,
-                    item.peso_escolas,
-                    item.peso_hospitais,
-                    item.peso_criminalidade
-                ),
-                style = MaterialTheme.typography.bodyMedium
-            )
-
-            Spacer(Modifier.height(14.dp))
-
-            Button(
-                onClick = onOpen,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(stringResource(R.string.open_again))
-            }
-        }
-    }
+        },
+        primaryAction = onOpen,
+        primaryText = stringResource(R.string.open_again)
+    )
 }

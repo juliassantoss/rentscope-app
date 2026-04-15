@@ -103,14 +103,12 @@ class AiViewModel : ViewModel() {
     private fun resolveMunicipio(pergunta: String): String {
         val perguntaLower = pergunta.lowercase()
 
-        // tenta encontrar município na pergunta
         val encontrado = municipios.firstOrNull {
             perguntaLower.contains(it.municipio_localidade.lowercase())
         }
 
         if (encontrado != null) return encontrado.municipio_localidade
 
-        // fallback: primeiro município da lista
         if (municipios.isNotEmpty()) {
             return municipios.first().municipio_localidade
         }
@@ -149,8 +147,8 @@ class AiViewModel : ViewModel() {
             Regras:
             - Responde sempre de forma útil e direta
             - Não peças mais dados desnecessariamente
-            - Se for pergunta sobre o app → explica o app
-            - Se for sobre viver → analisa o local
+            - Se for pergunta sobre o app, explica o app
+            - Se for sobre viver, analisa o local
             - Mantém respostas naturais
 
             Pergunta:
