@@ -32,15 +32,11 @@ class AiViewModel : ViewModel() {
     var municipios by mutableStateOf<List<MunicipioDto>>(emptyList())
         private set
 
+    private var greetingMessage by mutableStateOf("")
+    private var errorReplyMessage by mutableStateOf("")
+
     init {
         loadMunicipios()
-
-        messages.add(
-            ChatMessage(
-                "Olá! Pergunta-me qualquer coisa sobre municípios, mapas, filtros, preços ou como usar o RentScope.",
-                false
-            )
-        )
     }
 
     private fun loadMunicipios() {
@@ -52,14 +48,30 @@ class AiViewModel : ViewModel() {
         }
     }
 
-    fun perguntar(pergunta: String) {
+    fun syncLocalizedTexts(
+        greeting: String,
+        errorReply: String
+    ) {
+        greetingMessage = greeting
+        errorReplyMessage = errorReply
+
+        when {
+            messages.isEmpty() -> messages.add(ChatMessage(greeting, false))
+            messages.size == 1 && !messages.first().isUser -> {
+                messages[0] = ChatMessage(greeting, false)
+            }
+        }
+    }
+
+    fun perguntar(
+        pergunta: String,
+        languageCode: String
+    ) {
         val texto = pergunta.trim()
         if (texto.isBlank()) return
 
         val lastSearch = LastSearchManager.get()
-
         val pais = lastSearch?.countryName?.takeIf { it.isNotBlank() } ?: "Portugal"
-
         val municipio = resolveMunicipio(texto)
 
         viewModelScope.launch {
@@ -72,7 +84,14 @@ class AiViewModel : ViewModel() {
             val request = AiQuestionRequest(
                 pais = pais,
                 municipio = municipio,
-                pergunta = buildPrompt(texto, pais, municipio, lastSearch)
+                pergunta = texto,
+                idioma_app = languageCode,
+                renda_min = lastSearch?.rendaMin,
+                renda_max = lastSearch?.rendaMax,
+                peso_renda = lastSearch?.pesoRenda,
+                peso_escolas = lastSearch?.pesoEscolas,
+                peso_hospitais = lastSearch?.pesoHospitais,
+                peso_criminalidade = lastSearch?.pesoCriminalidade
             )
 
             val result = AiRepository.perguntar(request)
@@ -90,7 +109,12 @@ class AiViewModel : ViewModel() {
             result.onFailure {
                 error = it.message
                 messages.add(
-                    ChatMessage("Erro ao obter resposta. Tenta novamente.", false)
+                    ChatMessage(
+                        errorReplyMessage.ifBlank {
+                            "Nao consegui responder agora. Tenta novamente daqui a pouco."
+                        },
+                        false
+                    )
                 )
                 mascotState = MascotState.ERROR
 
@@ -100,69 +124,20 @@ class AiViewModel : ViewModel() {
         }
     }
 
-    private fun resolveMunicipio(pergunta: String): String {
+    private fun resolveMunicipio(pergunta: String): String? {
         val perguntaLower = pergunta.lowercase()
 
         val encontrado = municipios.firstOrNull {
             perguntaLower.contains(it.municipio_localidade.lowercase())
         }
 
-        if (encontrado != null) return encontrado.municipio_localidade
-
-        if (municipios.isNotEmpty()) {
-            return municipios.first().municipio_localidade
-        }
-
-        return "Município não especificado"
-    }
-
-    private fun buildPrompt(
-        pergunta: String,
-        pais: String,
-        municipio: String,
-        lastSearch: com.example.rentscope.data.local.LastSearchData?
-    ): String {
-        return """
-            Tu és o assistente do RentScope.
-
-            O utilizador pode perguntar QUALQUER coisa sobre:
-            - municípios
-            - qualidade de vida
-            - score
-            - filtros
-            - renda
-            - escolas
-            - hospitais
-            - criminalidade
-            - mapa coroplético
-            - histórico de preços
-            - funcionalidades do app
-
-            Contexto atual:
-            País: $pais
-            Município: $municipio
-            Renda mínima: ${lastSearch?.rendaMin ?: "não definida"}
-            Renda máxima: ${lastSearch?.rendaMax ?: "não definida"}
-
-            Regras:
-            - Responde sempre de forma útil e direta
-            - Não peças mais dados desnecessariamente
-            - Se for pergunta sobre o app, explica o app
-            - Se for sobre viver, analisa o local
-            - Mantém respostas naturais
-
-            Pergunta:
-            $pergunta
-        """.trimIndent()
+        return encontrado?.municipio_localidade
     }
 
     fun clearConversation() {
         messages.clear()
-        messages.add(
-            ChatMessage(
-                "Conversa reiniciada. Pergunta qualquer coisa sobre o RentScope.",
-                false
-            )
-        )
+        if (greetingMessage.isNotBlank()) {
+            messages.add(ChatMessage(greetingMessage, false))
+        }
     }
 }

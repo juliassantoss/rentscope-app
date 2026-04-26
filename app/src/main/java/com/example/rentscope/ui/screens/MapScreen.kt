@@ -57,15 +57,18 @@ import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlin.math.roundToInt
 
 private val ChoroplethColors = listOf(
-    Color(0xFFE3F2FD),
-    Color(0xFF90CAF9),
-    Color(0xFF42A5F5),
-    Color(0xFF1976D2),
-    Color(0xFF0D47A1)
+    Color(0xFFF4FAFF),
+    Color(0xFFD5E9FF),
+    Color(0xFF9BCBFF),
+    Color(0xFF4F9BFF),
+    Color(0xFF1D5FE0),
+    Color(0xFF082A7A)
 )
 private val BorderColor = Color(0xFF1E1E1E)
+private val EmptyMapFillColor = Color(0xFFE8EEF5)
 
 @Composable
 fun MapScreen(
@@ -166,6 +169,12 @@ fun MapScreen(
             toGeoJsonMunicipalityCode(municipio.codigoMunicipio) to municipio.score.toDouble()
         }
     }
+    val scoreBreakpoints = remember(scoreViewModel.municipios) {
+        buildChoroplethBreakpoints(
+            scores = scoreViewModel.municipios.map { it.score.toDouble() },
+            bucketCount = ChoroplethColors.size
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -228,7 +237,11 @@ fun MapScreen(
                 polygonsState.value.forEach { poly ->
                     val code = poly.municipalityCode?.trim().orEmpty()
                     val score = scoreByMunicipalityCode[code] ?: 0.0
-                    val fillColor = scoreToFillColor(score)
+                    val fillColor = if (code in scoreByMunicipalityCode) {
+                        scoreToFillColor(score, scoreBreakpoints)
+                    } else {
+                        EmptyMapFillColor
+                    }
 
                     if (poly.outer.size >= 3) {
                         Polygon(
@@ -352,13 +365,38 @@ private fun toGeoJsonMunicipalityCode(codigoMunicipio: Int): String {
         .padStart(4, '0')
 }
 
-private fun scoreToFillColor(score: Double): Color {
-    val normalized = score.coerceIn(0.0, 1.0).toFloat()
-    val colorIndex = (normalized * ChoroplethColors.lastIndex)
-        .toInt()
+private fun buildChoroplethBreakpoints(
+    scores: List<Double>,
+    bucketCount: Int
+): List<Double> {
+    val sortedScores = scores
+        .filter { it.isFinite() }
+        .sorted()
+
+    if (sortedScores.isEmpty() || bucketCount <= 1) {
+        return emptyList()
+    }
+
+    return (1 until bucketCount).map { bucket ->
+        val percentile = bucket.toFloat() / bucketCount.toFloat()
+        val index = (percentile * sortedScores.lastIndex)
+            .roundToInt()
+            .coerceIn(0, sortedScores.lastIndex)
+
+        sortedScores[index]
+    }
+}
+
+private fun scoreToFillColor(
+    score: Double,
+    breakpoints: List<Double>
+): Color {
+    val safeScore = score.takeIf { it.isFinite() } ?: 0.0
+    val colorIndex = breakpoints.indexOfFirst { safeScore <= it }
+        .let { index -> if (index == -1) ChoroplethColors.lastIndex else index }
         .coerceIn(0, ChoroplethColors.lastIndex)
 
-    return ChoroplethColors[colorIndex].copy(alpha = 0.92f)
+    return ChoroplethColors[colorIndex].copy(alpha = 0.96f)
 }
 
 @Composable

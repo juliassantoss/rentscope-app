@@ -1,6 +1,7 @@
 package com.example.rentscope.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,7 +18,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForwardIos
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -73,6 +75,7 @@ fun CountrySearchScreen(
 
     var query by remember { mutableStateOf("") }
 
+    val europe = stringResource(R.string.continent_europe)
     val regionsAvailableText = stringResource(
         R.string.regions_available_count,
         municipioVm.municipios.size
@@ -81,16 +84,20 @@ fun CountrySearchScreen(
     val loadingCountriesText = stringResource(R.string.loading_countries)
     val tryAgainText = stringResource(R.string.try_again)
 
-    val allCountries = remember(state.paises, regionsAvailableText) {
-        state.paises
-            .map { dto ->
-                CountryUi(
-                    code = dto.codigo,
-                    name = dto.nome,
-                    regionsAvailableText = regionsAvailableText
-                )
-            }
-            .sortedBy { it.name }
+    val allCountries = remember(state.paises, regionsAvailableText, continent, europe) {
+        if (continent != europe) {
+            emptyList()
+        } else {
+            state.paises
+                .map { dto ->
+                    CountryUi(
+                        code = dto.codigo,
+                        name = dto.nome,
+                        regionsAvailableText = regionsAvailableText
+                    )
+                }
+                .sortedBy { it.name }
+        }
     }
 
     val filtered = remember(query, allCountries) {
@@ -169,13 +176,19 @@ fun CountrySearchScreen(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(bottom = 16.dp)
         ) {
-            grouped.forEach { (letter, countries) ->
-                item { AlphaHeader(letter = letter) }
-                items(countries, key = { it.code + it.name }) { country ->
-                    CountryRow(
-                        country = country,
-                        onClick = { onCountryClick(country) }
-                    )
+            if (!state.loading && state.error == null && filtered.isEmpty()) {
+                item {
+                    NoCountriesCard(continent = continent)
+                }
+            } else {
+                grouped.forEach { (letter, countries) ->
+                    item { AlphaHeader(letter = letter) }
+                    items(countries, key = { it.code + it.name }) { country ->
+                        CountryRow(
+                            country = country,
+                            onClick = { onCountryClick(country) }
+                        )
+                    }
                 }
             }
         }
@@ -265,10 +278,58 @@ private fun CountryRow(
             }
 
             Icon(
-                imageVector = Icons.Filled.ArrowForwardIos,
+                imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(16.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun NoCountriesCard(continent: String) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(18.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Surface(
+                modifier = Modifier.size(48.dp),
+                shape = CircleShape,
+                color = BrandBlue.copy(alpha = 0.12f)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = Icons.Filled.Public,
+                        contentDescription = null,
+                        tint = BrandBlue
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(12.dp))
+
+            Text(
+                text = stringResource(R.string.no_countries_for_continent_title, continent),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(Modifier.height(6.dp))
+
+            Text(
+                text = stringResource(R.string.no_countries_for_continent_message),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }

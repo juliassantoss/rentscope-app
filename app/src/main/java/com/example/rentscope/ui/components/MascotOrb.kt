@@ -1,5 +1,6 @@
 package com.example.rentscope.ui.components
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,7 +30,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
@@ -37,6 +42,7 @@ import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
+import kotlinx.coroutines.delay
 
 enum class MascotState {
     IDLE,
@@ -50,10 +56,47 @@ fun MascotOrb(
     modifier: Modifier = Modifier,
     orbSize: Dp = 180.dp,
     followStrength: Float = 14f,
-    state: MascotState = MascotState.IDLE
+    state: MascotState = MascotState.IDLE,
+    lookAtWindow: Offset? = null
 ) {
     val density = LocalDensity.current
-    var touchPoint by remember { mutableStateOf<Offset?>(null) }
+    var localTouchPoint by remember { mutableStateOf<Offset?>(null) }
+    var orbPositionInWindow by remember { mutableStateOf<Offset?>(null) }
+    val externalLookPoint = lookAtWindow?.let { windowPoint ->
+        orbPositionInWindow?.let { orbPosition ->
+            Offset(
+                x = windowPoint.x - orbPosition.x,
+                y = windowPoint.y - orbPosition.y
+            )
+        }
+    }
+    val activeLookPoint = localTouchPoint ?: externalLookPoint
+    val isReacting = activeLookPoint != null
+
+    val pressScale by animateFloatAsState(
+        targetValue = if (isReacting) 1.06f else 1f,
+        animationSpec = tween(durationMillis = 220, easing = FastOutSlowInEasing),
+        label = "pressScale"
+    )
+
+    val reactionGlow by animateFloatAsState(
+        targetValue = if (isReacting) 1.14f else 1f,
+        animationSpec = tween(durationMillis = 260, easing = FastOutSlowInEasing),
+        label = "reactionGlow"
+    )
+
+    val reactionRimAlpha by animateFloatAsState(
+        targetValue = if (isReacting) 0.46f else 0.24f,
+        animationSpec = tween(durationMillis = 260, easing = FastOutSlowInEasing),
+        label = "reactionRimAlpha"
+    )
+
+    LaunchedEffect(localTouchPoint) {
+        if (localTouchPoint != null) {
+            delay(1200)
+            localTouchPoint = null
+        }
+    }
 
     val floatDuration = when (state) {
         MascotState.IDLE -> 2200
@@ -182,12 +225,18 @@ fun MascotOrb(
                     )
                 }
                 .size(orbSize)
+                .onGloballyPositioned { coordinates ->
+                    orbPositionInWindow = coordinates.positionInWindow()
+                }
+                .graphicsLayer {
+                    scaleX = pressScale
+                    scaleY = pressScale
+                }
                 .pointerInput(Unit) {
                     detectTapGestures(
                         onPress = { offset ->
-                            touchPoint = offset
+                            localTouchPoint = offset
                             tryAwaitRelease()
-                            touchPoint = null
                         }
                     )
                 }
@@ -198,7 +247,7 @@ fun MascotOrb(
                 val orbRadius = size.minDimension * 0.35f
                 val center = Offset(canvasWidth / 2f, canvasHeight / 2f)
 
-                val glowRadius = orbRadius * 1.45f * glowPulse
+                val glowRadius = orbRadius * 1.45f * glowPulse * reactionGlow
                 val shadowCenter = Offset(center.x, center.y + orbRadius * 0.95f)
 
                 drawCircle(
@@ -267,10 +316,10 @@ fun MascotOrb(
                 )
 
                 drawCircle(
-                    color = Color(0x30FFFFFF),
-                    radius = orbRadius,
+                    color = Color.White.copy(alpha = reactionRimAlpha),
+                    radius = orbRadius * if (isReacting) 1.03f else 1f,
                     center = center,
-                    style = Stroke(width = orbRadius * 0.07f)
+                    style = Stroke(width = orbRadius * 0.055f)
                 )
 
                 val leftEyeBase = Offset(
@@ -292,8 +341,8 @@ fun MascotOrb(
 
                 val pupilOffset = calculateEyeOffset(
                     center = center,
-                    target = touchPoint,
-                    maxDistance = orbRadius * 0.13f,
+                    target = activeLookPoint,
+                    maxDistance = orbRadius * if (isReacting) 0.16f else 0.12f,
                     followStrength = eyeFollowStrength
                 )
 

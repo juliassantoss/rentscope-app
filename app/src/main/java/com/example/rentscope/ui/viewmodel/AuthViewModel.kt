@@ -22,6 +22,15 @@ class AuthViewModel : ViewModel() {
     var registerError by mutableStateOf<String?>(null)
         private set
 
+    var forgotPasswordLoading by mutableStateOf(false)
+        private set
+
+    var forgotPasswordError by mutableStateOf<String?>(null)
+        private set
+
+    var forgotPasswordSuccess by mutableStateOf<String?>(null)
+        private set
+
     fun login(
         email: String,
         password: String,
@@ -90,6 +99,32 @@ class AuthViewModel : ViewModel() {
                 }
                 .onFailure {
                     registerError = it.message ?: "Erro ao criar conta."
+                }
+        }
+    }
+
+    fun forgotPassword(email: String) {
+        forgotPasswordError = null
+        forgotPasswordSuccess = null
+
+        if (email.isBlank()) {
+            forgotPasswordError = "Digite seu e-mail."
+            return
+        }
+
+        viewModelScope.launch {
+            forgotPasswordLoading = true
+
+            val result = AuthRepository.forgotPassword(email.trim())
+
+            forgotPasswordLoading = false
+
+            result
+                .onSuccess {
+                    forgotPasswordSuccess = "Enviamos um e-mail de recuperação."
+                }
+                .onFailure {
+                    forgotPasswordError = it.message ?: "Erro ao solicitar recuperação de senha."
                 }
         }
     }

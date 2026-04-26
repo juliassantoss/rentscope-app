@@ -51,11 +51,13 @@ object Routes {
 
     const val LOGIN = "login"
     const val NEW_ACCOUNT = "new_account"
+    const val FORGOT_PASSWORD = "forgot_password"
 
     const val LANGUAGE = "language"
     const val RESULTS = "results"
     const val HISTORY = "history"
     const val FAVORITES = "favorites"
+    const val COMPARISON = "comparison"
     const val PRICE_HISTORY = "price_history"
 
     const val DEBUG_PAISES = "debug_paises"

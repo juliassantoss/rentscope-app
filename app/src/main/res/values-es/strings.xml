@@ -14,7 +14,7 @@
     <string name="search_history">Historial de búsquedas</string>
     <string name="ai_assistant_title">Asistente IA</string>
     <string name="available_countries">Países disponibles</string>
-    <string name="compare_regions">Comparar regiones</string>
+    <string name="compare_regions">Comparar localidades</string>
     <string name="settings">Configuración</string>
 
     <string name="session_started">Sesión iniciada</string>
@@ -34,9 +34,10 @@
     <string name="home_title">Bienvenido a RentScope</string>
     <string name="home_subtitle">Descubre los mejores lugares para vivir</string>
     <string name="home_mascot_message">¡Hola! Puedo ayudarte con dudas sobre lugares para vivir, coste de vida y más.</string>
-    <string name="home_assistant_button">Hablar con asistente</string>
+    <string name="home_assistant_button">Habla conmigo</string>
     <string name="home_select_continent_card">Selecciona un continente para empezar\nla búsqueda</string>
     <string name="home_select_continent_label">Selecciona el continente</string>
+    <string name="home_select_continent_helper">Este es el primer paso para encontrar los países y ciudades disponibles para tu búsqueda.</string>
     <string name="continue_button">Continuar</string>
 
     <string name="continent_europe">Europa</string>
@@ -51,6 +52,11 @@
     <string name="email_label">Correo electrónico</string>
     <string name="password_label">Contraseña</string>
     <string name="forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="forgot_password_title">Recuperar contraseña</string>
+    <string name="forgot_password_instruction">Escribe tu correo electrónico abajo.</string>
+    <string name="forgot_password_submit">Enviar email de recuperación</string>
+    <string name="forgot_password_success">Enviamos un email de recuperación.</string>
+    <string name="back_to_login">Volver al login</string>
     <string name="no_account_yet">¿Aún no tienes cuenta? </string>
     <string name="create_account_action">Crear cuenta</string>
     <string name="already_have_account">¿Ya tienes cuenta? </string>
@@ -110,6 +116,23 @@
     <string name="remove_from_favorites">Eliminar de favoritos</string>
 
     <string name="results_subtitle">Top 10 ciudades con mejor adecuación según la última búsqueda.</string>
+    <string name="comparison_title">Comparación de Localidades</string>
+    <string name="comparison_subtitle">Compara dos localidades lado a lado según tu última búsqueda.</string>
+    <string name="comparison_intro_body">Selecciona dos localidades para ver score, renta media y factores relevantes con el mismo contexto de filtros.</string>
+    <string name="comparison_no_search_title">Aún no hay datos para comparar</string>
+    <string name="comparison_no_search_message">Haz una búsqueda en el mapa para cargar las localidades disponibles para la comparación.</string>
+    <string name="comparison_portugal_only">Por ahora, la comparación detallada está disponible solo para Portugal.</string>
+    <string name="comparison_loading_title">Cargando comparación</string>
+    <string name="comparison_loading_message">Estamos preparando las localidades de tu última búsqueda.</string>
+    <string name="comparison_not_enough_message">Se necesitan al menos dos localidades disponibles para comparar.</string>
+    <string name="comparison_guide_title">Mismo contexto de filtros</string>
+    <string name="comparison_selectors_title">Elige las localidades</string>
+    <string name="comparison_selectors_message">Selecciona dos localidades para comparar los mismos criterios lado a lado.</string>
+    <string name="comparison_select_left">Localidad A</string>
+    <string name="comparison_select_right">Localidad B</string>
+    <string name="comparison_search_placeholder">Buscar municipio</string>
+    <string name="comparison_no_matches">No se encontraron localidades</string>
+    <string name="comparison_score_title">Score</string>
     <string name="results_portugal_only">Por ahora, los resultados detallados están disponibles solo para Portugal.</string>
     <string name="no_results_title">Aún no hay resultados</string>
     <string name="no_results_message">Haz una búsqueda en el mapa para ver aquí las 10 mejores ciudades.</string>
@@ -140,6 +163,8 @@
     <string name="error_loading_countries">Error al cargar países: %1$s</string>
     <string name="try_again">Intentar de nuevo</string>
     <string name="countries_found">%1$d países encontrados</string>
+    <string name="no_countries_for_continent_title">No hay países disponibles en %1$s</string>
+    <string name="no_countries_for_continent_message">Todavía no hay países registrados para este continente. RentScope actualmente tiene datos disponibles para Portugal, en Europa.</string>
 
     <string name="debug_countries_title">Debug /paises</string>
     <string name="received_items">Elementos recibidos: %1$d</string>
@@ -149,4 +174,37 @@
 
     <string name="price_history">Historial de precios</string>
     <string name="search_municipality_label">Seleccionar municipio</string>
+    <string name="price_history_subtitle">Sigue la evolución del precio medio por metro cuadrado.</string>
+    <string name="price_history_intro_title">Historial por municipio</string>
+    <string name="price_history_intro_message">Busca un municipio para ver la evolución de los precios a lo largo del tiempo.</string>
+    <string name="price_history_search_label">Buscar municipio</string>
+    <string name="price_history_search_placeholder">Ej.: Braga, Porto, Aveiro...</string>
+    <string name="price_history_empty_search">No se encontró ningún municipio</string>
+    <string name="price_history_loading_municipios">Cargando municipios...</string>
+    <string name="price_history_loading_data">Cargando historial de precios...</string>
+    <string name="price_history_error_title">Error al cargar el historial</string>
+    <string name="price_history_select_title">Selecciona un municipio</string>
+    <string name="price_history_select_message">Usa la búsqueda de arriba para encontrar rápidamente el municipio deseado.</string>
+    <string name="price_history_no_data_title">No hay datos disponibles</string>
+    <string name="price_history_no_data_message">No se encontraron registros de historial para %1$s.</string>
+    <string name="price_history_chart_subtitle">Evolución del precio medio por m²</string>
+    <string name="price_history_latest_value">Valor más reciente</string>
+    <string name="price_history_period_variation">Variación en el período</string>
+    <string name="price_history_records_count">Número de registros</string>
+    <string name="ai_assistant_name">Scopey</string>
+    <string name="ai_assistant_subtitle">Habla con Scopey sobre municipios, filtros, mapa y resultados.</string>
+    <string name="ai_assistant_intro_title">Ayuda en el contexto correcto</string>
+    <string name="ai_assistant_intro_message">Las respuestas siguen el contexto de tu búsqueda actual y te ayudan a interpretar RentScope con más claridad.</string>
+    <string name="ai_user_label">Tú</string>
+    <string name="ai_send">Enviar</string>
+    <string name="ai_suggestions_title">Sugerencias rápidas</string>
+    <string name="ai_input_placeholder">Pregunta a Scopey...</string>
+    <string name="ai_welcome_message">¡Hola! Pregúntame cualquier cosa sobre municipios, mapas, filtros, precios o cómo usar RentScope.</string>
+    <string name="ai_error_reply">No pude responder ahora mismo. Inténtalo de nuevo dentro de un momento.</string>
+    <string name="ai_quick_question_results">¿Cómo interpreto los resultados de RentScope?</string>
+    <string name="ai_quick_question_weights">¿Qué significan los pesos de los filtros?</string>
+    <string name="ai_quick_question_score">¿Cómo se calcula el score del municipio?</string>
+    <string name="ai_quick_question_country_fit">¿Este país encaja con mis preferencias?</string>
+    <string name="ai_quick_question_map">¿Cómo uso el mapa coroplético?</string>
+    <string name="ai_quick_question_price_history">¿Qué me muestra el historial de precios?</string>
 </resources>

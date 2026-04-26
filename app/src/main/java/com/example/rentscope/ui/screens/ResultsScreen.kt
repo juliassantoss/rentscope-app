@@ -37,6 +37,7 @@ import com.example.rentscope.R
 import com.example.rentscope.data.local.LastSearchData
 import com.example.rentscope.data.local.LastSearchManager
 import com.example.rentscope.data.remote.dto.score.ScoreMunicipioDto
+import com.example.rentscope.ui.components.SkeletonBlock
 import com.example.rentscope.ui.viewmodel.ScoreViewModel
 import java.util.Locale
 
@@ -102,10 +103,14 @@ fun ResultsScreen(
                 }
 
                 vm.isLoading -> {
-                    EmptyStateCard(
+                    LoadingStateCard(
                         title = stringResource(R.string.loading_results_title),
                         message = stringResource(R.string.loading_results_message)
                     )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    ResultsLoadingContent()
                 }
 
                 !vm.errorMessage.isNullOrBlank() -> {
@@ -134,6 +139,44 @@ fun ResultsScreen(
                             ResultCityCard(item = item)
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ResultsLoadingContent() {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        repeat(2) {
+            SectionCard {
+                SkeletonBlock(
+                    modifier = Modifier
+                        .fillMaxWidth(0.38f)
+                        .height(16.dp)
+                )
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                SkeletonBlock(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp)
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    SkeletonBlock(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(54.dp)
+                    )
+                    SkeletonBlock(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(54.dp)
+                    )
                 }
             }
         }
@@ -301,6 +344,6 @@ private fun ResultCityCard(item: ScoreMunicipioDto) {
     }
 }
 
-private fun format1(value: Float): String = String.format(Locale.US, "%.1f", value)
+private fun format1(value: Float): String = String.format(Locale.getDefault(), "%.1f", value)
 
 private fun formatNullable(value: Float?): String = value?.let { format1(it) } ?: "-"

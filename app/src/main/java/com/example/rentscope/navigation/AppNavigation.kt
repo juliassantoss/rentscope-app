@@ -26,10 +26,12 @@ import com.example.rentscope.data.local.LastSearchManager
 import com.example.rentscope.data.local.TokenManager
 import com.example.rentscope.data.remote.dto.history.FiltroSalvoDto
 import com.example.rentscope.ui.screens.AiAssistantScreen
+import com.example.rentscope.ui.screens.ComparisonScreen
 import com.example.rentscope.ui.screens.CountrySearchScreen
 import com.example.rentscope.ui.screens.DebugPaisesScreen
 import com.example.rentscope.ui.screens.FavoritesScreen
 import com.example.rentscope.ui.screens.FiltersScreen
+import com.example.rentscope.ui.screens.ForgotPasswordScreen
 import com.example.rentscope.ui.screens.HistoryScreen
 import com.example.rentscope.ui.screens.HomeScreen
 import com.example.rentscope.ui.screens.LanguageScreen
@@ -275,7 +277,9 @@ fun AppNavigation() {
                     padding = padding,
                     isLoading = authViewModel.loginLoading,
                     errorMessage = authViewModel.loginError,
-                    onForgotPasswordClick = { },
+                    onForgotPasswordClick = {
+                        navController.navigate(Routes.FORGOT_PASSWORD)
+                    },
                     onCreateAccountClick = {
                         navController.navigate(Routes.NEW_ACCOUNT)
                     },
@@ -295,6 +299,19 @@ fun AppNavigation() {
                                 }
                             }
                         )
+                    }
+                )
+            }
+
+            composable(Routes.FORGOT_PASSWORD) {
+                ForgotPasswordScreen(
+                    padding = padding,
+                    isLoading = authViewModel.forgotPasswordLoading,
+                    errorMessage = authViewModel.forgotPasswordError,
+                    successMessage = authViewModel.forgotPasswordSuccess,
+                    onBackToLoginClick = { navController.popBackStack() },
+                    onSubmitClick = { email ->
+                        authViewModel.forgotPassword(email)
                     }
                 )
             }
@@ -349,6 +366,12 @@ fun AppNavigation() {
 
             composable(Routes.PRICE_HISTORY) {
                 PriceHistoryScreen(
+                    padding = padding
+                )
+            }
+
+            composable(Routes.COMPARISON) {
+                ComparisonScreen(
                     padding = padding
                 )
             }

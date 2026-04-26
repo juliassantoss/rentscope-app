@@ -2,6 +2,7 @@ package com.example.rentscope.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -36,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.rentscope.R
 import com.example.rentscope.data.remote.dto.history.FiltroSalvoDto
+import com.example.rentscope.ui.components.SkeletonBlock
 import java.util.Locale
 
 private val SharedBlue = Color(0xFF00708E)
@@ -79,6 +81,160 @@ fun ScreenHeader(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
+    }
+}
+
+/**
+ * Wraps related content in a consistent premium card used across feature screens.
+ *
+ * @param modifier Layout modifier used to size or position the card.
+ * @param contentPadding Inner spacing applied around the content.
+ * @param content Visual content rendered inside the card.
+ */
+@Composable
+fun SectionCard(
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(16.dp),
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(contentPadding),
+            content = content
+        )
+    }
+}
+
+/**
+ * Highlights contextual information with a more expressive visual treatment.
+ *
+ * @param title Short heading that frames the message.
+ * @param message Supporting text shown below the title.
+ * @param icon Visual cue associated with the information.
+ * @param modifier Layout modifier used to size or position the card.
+ */
+@Composable
+fun InfoBannerCard(
+    title: String,
+    message: String,
+    icon: ImageVector,
+    modifier: Modifier = Modifier
+) {
+    SectionCard(
+        modifier = modifier,
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp)
+    ) {
+        Row(verticalAlignment = Alignment.Top) {
+            Surface(
+                modifier = Modifier.size(42.dp),
+                shape = CircleShape,
+                color = SharedBlue.copy(alpha = 0.12f)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = SharedBlue
+                    )
+                }
+            }
+
+            Spacer(Modifier.size(12.dp))
+
+            Column(Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = message,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
+/**
+ * Provides a polished loading card with animated skeleton lines.
+ *
+ * @param title Primary loading label shown to the user.
+ * @param message Secondary message that explains what is happening.
+ * @param modifier Layout modifier used to size or position the card.
+ */
+@Composable
+fun LoadingStateCard(
+    title: String,
+    message: String,
+    modifier: Modifier = Modifier
+) {
+    SectionCard(
+        modifier = modifier,
+        contentPadding = PaddingValues(18.dp)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Surface(
+                modifier = Modifier.size(42.dp),
+                shape = CircleShape,
+                color = SharedBlue.copy(alpha = 0.10f)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = Icons.Filled.Assessment,
+                        contentDescription = null,
+                        tint = SharedBlue
+                    )
+                }
+            }
+
+            Spacer(Modifier.size(12.dp))
+
+            Column(Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = message,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        SkeletonBlock(
+            modifier = Modifier
+                .fillMaxWidth(0.92f)
+                .height(14.dp)
+        )
+
+        Spacer(Modifier.height(10.dp))
+
+        SkeletonBlock(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(12.dp)
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        SkeletonBlock(
+            modifier = Modifier
+                .fillMaxWidth(0.78f)
+                .height(12.dp)
+        )
     }
 }
 
@@ -356,5 +512,5 @@ private fun formatMaybe(value: Float?): String = value?.let { formatFloat(it) } 
 
 private fun formatFloat(value: Float): String {
     val intValue = value.toInt()
-    return if (value == intValue.toFloat()) intValue.toString() else String.format(Locale.US, "%.1f", value)
+    return if (value == intValue.toFloat()) intValue.toString() else String.format(Locale.getDefault(), "%.1f", value)
 }

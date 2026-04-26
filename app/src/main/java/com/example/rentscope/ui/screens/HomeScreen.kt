@@ -2,6 +2,7 @@ package com.example.rentscope.ui.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,9 +14,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material3.Button
@@ -27,13 +30,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -41,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import com.example.rentscope.R
 import com.example.rentscope.ui.components.MascotOrb
 import com.example.rentscope.ui.components.MascotState
+import kotlinx.coroutines.delay
 
 private val BrandBlue = Color(0xFF2F86D6)
 
@@ -58,10 +68,39 @@ fun HomeScreen(
     val antarctica = stringResource(R.string.continent_antarctica)
 
     var selectedContinent by remember { mutableStateOf(europe) }
+    var homePositionInWindow by remember { mutableStateOf(Offset.Zero) }
+    var mascotLookAtWindow by remember { mutableStateOf<Offset?>(null) }
+
+    LaunchedEffect(mascotLookAtWindow) {
+        if (mascotLookAtWindow != null) {
+            delay(1200)
+            mascotLookAtWindow = null
+        }
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .onGloballyPositioned { coordinates ->
+                homePositionInWindow = coordinates.positionInWindow()
+            }
+            .pointerInput(homePositionInWindow) {
+                awaitPointerEventScope {
+                    while (true) {
+                        val event = awaitPointerEvent(PointerEventPass.Initial)
+                        val touchStart = event.changes.firstOrNull { change ->
+                            change.pressed && !change.previousPressed
+                        }
+
+                        if (touchStart != null) {
+                            mascotLookAtWindow = Offset(
+                                x = homePositionInWindow.x + touchStart.position.x,
+                                y = homePositionInWindow.y + touchStart.position.y
+                            )
+                        }
+                    }
+                }
+            }
             .padding(top = 112.dp)
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 20.dp),
@@ -101,45 +140,41 @@ fun HomeScreen(
                         .fillMaxWidth()
                         .height(136.dp),
                     orbSize = 122.dp,
-                    state = MascotState.IDLE
+                    state = MascotState.IDLE,
+                    lookAtWindow = mascotLookAtWindow
                 )
 
                 Spacer(Modifier.height(10.dp))
 
-                Card(
-                    shape = RoundedCornerShape(14.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.home_mascot_message),
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 9.dp),
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    Column(
+                        modifier = Modifier.align(Alignment.CenterEnd),
+                        horizontalAlignment = Alignment.End
+                    ) {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(0.94f),
+                            shape = RoundedCornerShape(14.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.home_mascot_message),
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 9.dp),
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
 
-                Spacer(Modifier.height(10.dp))
+                        Spacer(Modifier.height(4.dp))
 
-                Button(
-                    onClick = onOpenAssistant,
-                    modifier = Modifier.height(40.dp),
-                    shape = RoundedCornerShape(14.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = BrandBlue),
-                    contentPadding = PaddingValues(horizontal = 18.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.home_assistant_button),
-                        color = Color.White,
-                        fontWeight = FontWeight.SemiBold,
-                        style = MaterialTheme.typography.bodySmall
-                    )
+                        AssistantShortcutBubble(onClick = onOpenAssistant)
+                    }
                 }
 
                 Spacer(Modifier.height(14.dp))
 
-                AlignStartTitle(stringResource(R.string.home_select_continent_label))
+                ContinentStepHeader()
 
                 Spacer(Modifier.height(8.dp))
 
@@ -234,13 +269,74 @@ fun HomeScreen(
 }
 
 @Composable
-private fun AlignStartTitle(text: String) {
-    Row(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold
-        )
+private fun ContinentStepHeader() {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Surface(
+            modifier = Modifier.size(34.dp),
+            shape = CircleShape,
+            color = BrandBlue.copy(alpha = 0.14f)
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(
+                    imageVector = Icons.Filled.Public,
+                    contentDescription = null,
+                    tint = BrandBlue,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+        }
+
+        Spacer(Modifier.width(10.dp))
+
+        Column(Modifier.weight(1f)) {
+            Text(
+                text = stringResource(R.string.home_select_continent_label),
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(Modifier.height(2.dp))
+            Text(
+                text = stringResource(R.string.home_select_continent_helper),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun AssistantShortcutBubble(onClick: () -> Unit) {
+    Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(999.dp),
+        color = BrandBlue.copy(alpha = 0.12f),
+        contentColor = BrandBlue,
+        border = BorderStroke(1.dp, BrandBlue.copy(alpha = 0.18f))
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.AutoAwesome,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp)
+            )
+            Text(
+                text = stringResource(R.string.home_assistant_button),
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.SemiBold
+            )
+            Icon(
+                imageVector = Icons.Filled.ChevronRight,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp)
+            )
+        }
     }
 }
 

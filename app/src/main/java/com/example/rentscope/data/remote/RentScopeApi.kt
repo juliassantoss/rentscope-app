@@ -5,6 +5,8 @@ import com.example.rentscope.data.remote.dto.PaisDto
 import com.example.rentscope.data.remote.dto.ai.AiQuestionRequest
 import com.example.rentscope.data.remote.dto.ai.AiQuestionResponse
 import com.example.rentscope.data.remote.dto.auth.LoginRequestDto
+import com.example.rentscope.data.remote.dto.auth.ForgotPasswordRequestDto
+import com.example.rentscope.data.remote.dto.auth.MessageResponseDto
 import com.example.rentscope.data.remote.dto.auth.RegisterRequestDto
 import com.example.rentscope.data.remote.dto.auth.TokenResponseDto
 import com.example.rentscope.data.remote.dto.auth.UserDto
@@ -39,6 +41,11 @@ interface RentScopeApi {
     suspend fun login(
         @Body body: LoginRequestDto
     ): Response<TokenResponseDto>
+
+    @POST("auth/forgot-password")
+    suspend fun forgotPassword(
+        @Body body: ForgotPasswordRequestDto
+    ): Response<MessageResponseDto>
 
     @GET("auth/me")
     suspend fun me(): Response<UserDto>

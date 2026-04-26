@@ -3,6 +3,7 @@ package com.example.rentscope.data.repository
 import com.example.rentscope.data.local.TokenManager
 import com.example.rentscope.data.remote.ApiClient
 import com.example.rentscope.data.remote.RentScopeApi
+import com.example.rentscope.data.remote.dto.auth.ForgotPasswordRequestDto
 import com.example.rentscope.data.remote.dto.auth.LoginRequestDto
 import com.example.rentscope.data.remote.dto.auth.RegisterRequestDto
 import com.example.rentscope.data.remote.dto.auth.UserDto
@@ -61,6 +62,22 @@ object AuthRepository {
             }
         } catch (e: Exception) {
             Result.failure(Exception(e.message ?: "Erro ao criar conta."))
+        }
+    }
+
+    suspend fun forgotPassword(email: String): Result<String> {
+        return try {
+            val response = api.forgotPassword(
+                ForgotPasswordRequestDto(email = email)
+            )
+
+            if (response.isSuccessful) {
+                Result.success(response.body()?.message ?: "Enviamos um e-mail de recuperação.")
+            } else {
+                Result.failure(Exception(parseErrorMessage(response.errorBody()?.string())))
+            }
+        } catch (e: Exception) {
+            Result.failure(Exception(e.message ?: "Erro ao solicitar recuperação de senha."))
         }
     }
 
