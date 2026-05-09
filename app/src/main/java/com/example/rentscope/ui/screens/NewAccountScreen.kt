@@ -135,6 +135,8 @@ fun NewAccountScreen(
                     )
                 )
 
+                Spacer(Modifier.height(16.dp))
+                
                 if (!errorMessage.isNullOrBlank()) {
                     Spacer(Modifier.height(12.dp))
                     AccountErrorMessage(errorMessage)

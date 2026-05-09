@@ -3,6 +3,7 @@ package com.example.rentscope.data.repository
 import com.example.rentscope.data.remote.ApiClient
 import com.example.rentscope.data.remote.RentScopeApi
 import com.example.rentscope.data.remote.dto.history.FavoritoCreateDto
+import com.example.rentscope.data.remote.dto.history.FavoritoMunicipioDto
 import com.example.rentscope.data.remote.dto.history.FiltroSalvoCreateDto
 import com.example.rentscope.data.remote.dto.history.FiltroSalvoDto
 import org.json.JSONObject
@@ -76,9 +77,11 @@ object HistoryRepository {
         }
     }
 
-    suspend fun adicionarFavorito(filtroId: String): Result<Unit> {
+    suspend fun adicionarFavorito(codigoMunicipio: Int): Result<Unit> {
         return try {
-            val response = api.adicionarFavorito(FavoritoCreateDto(filtro_id = filtroId))
+            val response = api.adicionarFavorito(
+                FavoritoCreateDto(codigo_municipio = codigoMunicipio)
+            )
             if (response.isSuccessful) {
                 Result.success(Unit)
             } else {
@@ -89,7 +92,7 @@ object HistoryRepository {
         }
     }
 
-    suspend fun listarFavoritos(): Result<List<FiltroSalvoDto>> {
+    suspend fun listarFavoritos(): Result<List<FavoritoMunicipioDto>> {
         return try {
             val response = api.listarFavoritos()
             if (response.isSuccessful) {
@@ -102,9 +105,9 @@ object HistoryRepository {
         }
     }
 
-    suspend fun removerFavorito(filtroId: String): Result<Unit> {
+    suspend fun removerFavorito(codigoMunicipio: Int): Result<Unit> {
         return try {
-            val response = api.removerFavorito(filtroId)
+            val response = api.removerFavorito(codigoMunicipio)
             if (response.isSuccessful) {
                 Result.success(Unit)
             } else {

@@ -37,20 +37,26 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.rentscope.R
+import com.example.rentscope.data.geo.GeoJsonCache
 import com.example.rentscope.ui.viewmodel.MunicipioViewModel
 import com.example.rentscope.ui.viewmodel.PaisesViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 private val BrandBlue = Color(0xFF2F86D6)
+private const val PortugalMunicipalityCount = 308
 
 data class CountryUi(
     val code: String,
@@ -67,16 +73,28 @@ fun CountrySearchScreen(
     val vm: PaisesViewModel = viewModel()
     val municipioVm: MunicipioViewModel = viewModel()
     val state by vm.state.collectAsState()
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(continent) {
         vm.carregarPaises()
         municipioVm.load()
+
+        // Pré-carrega o GeoJSON em background. Quando o utilizador escolher
+        // Portugal, o mapa abre quase instantaneamente.
+        scope.launch(Dispatchers.IO) {
+            runCatching { GeoJsonCache.loadPortugalConcelhos(context) }
+        }
     }
 
     var query by remember { mutableStateOf("") }
 
     val europe = stringResource(R.string.continent_europe)
-    val regionsAvailableText = stringResource(
+    val portugalRegionsAvailableText = stringResource(
+        R.string.regions_available_count,
+        PortugalMunicipalityCount
+    )
+    val genericRegionsAvailableText = stringResource(
         R.string.regions_available_count,
         municipioVm.municipios.size
     )
@@ -84,12 +102,24 @@ fun CountrySearchScreen(
     val loadingCountriesText = stringResource(R.string.loading_countries)
     val tryAgainText = stringResource(R.string.try_again)
 
-    val allCountries = remember(state.paises, regionsAvailableText, continent, europe) {
+    val allCountries = remember(
+        state.paises,
+        portugalRegionsAvailableText,
+        genericRegionsAvailableText,
+        continent,
+        europe
+    ) {
         if (continent != europe) {
             emptyList()
         } else {
             state.paises
                 .map { dto ->
+                    val regionsAvailableText = if (dto.codigo == "PT") {
+                        portugalRegionsAvailableText
+                    } else {
+                        genericRegionsAvailableText
+                    }
+
                     CountryUi(
                         code = dto.codigo,
                         name = dto.nome,
@@ -150,12 +180,13 @@ fun CountrySearchScreen(
 
             state.error != null -> {
                 Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)) {
-                    Text(
-                        text = stringResource(R.string.error_loading_countries, state.error ?: ""),
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall
+                    EmptyStateCard(
+                        title = stringResource(R.string.error_loading_countries_title),
+                        message = countriesErrorMessage(errorKey = state.error)
                     )
-                    Spacer(Modifier.height(8.dp))
+
+                    Spacer(Modifier.height(10.dp))
+
                     Button(onClick = { vm.carregarPaises() }) {
                         Text(tryAgainText)
                     }
@@ -284,6 +315,16 @@ private fun CountryRow(
                 modifier = Modifier.size(16.dp)
             )
         }
+    }
+}
+
+@Composable
+private fun countriesErrorMessage(errorKey: String?): String {
+    return when (errorKey) {
+        "countries_error_network" -> stringResource(R.string.countries_error_network_message)
+        "countries_error_timeout" -> stringResource(R.string.countries_error_timeout_message)
+        "countries_error_server" -> stringResource(R.string.countries_error_server_message)
+        else -> stringResource(R.string.countries_error_generic_message)
     }
 }
 

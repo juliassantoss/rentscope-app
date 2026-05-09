@@ -11,6 +11,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -23,6 +26,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.rentscope.data.local.LastSearchData
 import com.example.rentscope.data.local.LastSearchManager
+import com.example.rentscope.data.local.RentPreferenceManager
 import com.example.rentscope.data.local.TokenManager
 import com.example.rentscope.data.remote.dto.history.FiltroSalvoDto
 import com.example.rentscope.ui.screens.AiAssistantScreen
@@ -47,10 +51,18 @@ fun AppNavigation() {
     val context = LocalContext.current
     val navController = rememberNavController()
     val authViewModel: AuthViewModel = viewModel()
+    var startDestination by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
         TokenManager.init(context)
         LastSearchManager.init(context)
+        RentPreferenceManager.init(context)
+        startDestination = if (TokenManager.isLoggedIn()) Routes.HOME else Routes.LOGIN
+    }
+
+    if (startDestination == null) {
+        Box(modifier = Modifier.fillMaxSize())
+        return
     }
 
     val backStackEntry = navController.currentBackStackEntryAsState().value
@@ -95,7 +107,7 @@ fun AppNavigation() {
 
         NavHost(
             navController = navController,
-            startDestination = Routes.HOME
+            startDestination = startDestination!!
         ) {
 
             composable(Routes.HOME) {
@@ -242,9 +254,14 @@ fun AppNavigation() {
                 val countryName = Uri.decode(entry.arguments?.getString("countryName") ?: "País")
 
                 val previousStateHandle = navController.previousBackStackEntry?.savedStateHandle
+                val defaultRentPreferences = RentPreferenceManager.get()
 
-                val rendaMin = previousStateHandle?.get<Float>("rendaMin") ?: 0f
-                val rendaMax = previousStateHandle?.get<Float>("rendaMax") ?: 20f
+                val rendaMin = previousStateHandle?.get<Float>("rendaMin")
+                    ?: defaultRentPreferences?.rendaMin
+                    ?: 0f
+                val rendaMax = previousStateHandle?.get<Float>("rendaMax")
+                    ?: defaultRentPreferences?.rendaMax
+                    ?: 20f
                 val pesoRenda = previousStateHandle?.get<Float>("pesoRenda") ?: 1f
                 val pesoEscolas = previousStateHandle?.get<Float>("pesoEscolas") ?: 1f
                 val pesoHospitais = previousStateHandle?.get<Float>("pesoHospitais") ?: 1f
@@ -277,6 +294,12 @@ fun AppNavigation() {
                     padding = padding,
                     isLoading = authViewModel.loginLoading,
                     errorMessage = authViewModel.loginError,
+                    onContinueWithoutLoginClick = {
+                        navController.navigate(Routes.HOME) {
+                            popUpTo(Routes.LOGIN) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    },
                     onForgotPasswordClick = {
                         navController.navigate(Routes.FORGOT_PASSWORD)
                     },
@@ -344,7 +367,8 @@ fun AppNavigation() {
             composable(Routes.RESULTS) {
                 ResultsScreen(
                     padding = padding,
-                    onOpenMapClick = { data -> openLastSearchOnMap(data) }
+                    onOpenMapClick = { data -> openLastSearchOnMap(data) },
+                    onLoginClick = { navController.navigate(Routes.LOGIN) }
                 )
             }
 
@@ -359,8 +383,7 @@ fun AppNavigation() {
             composable(Routes.FAVORITES) {
                 FavoritesScreen(
                     padding = padding,
-                    onLoginClick = { navController.navigate(Routes.LOGIN) },
-                    onOpenSearch = { item -> openSearchFromHistory(item) }
+                    onLoginClick = { navController.navigate(Routes.LOGIN) }
                 )
             }
 

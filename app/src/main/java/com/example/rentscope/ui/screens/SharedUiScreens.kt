@@ -19,6 +19,7 @@ import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -46,7 +47,8 @@ private val SharedBlue = Color(0xFF00708E)
 fun ScreenHeader(
     title: String,
     subtitle: String,
-    icon: ImageVector
+    icon: ImageVector,
+    trailing: @Composable (() -> Unit)? = null
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -80,6 +82,11 @@ fun ScreenHeader(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+        }
+
+        if (trailing != null) {
+            Spacer(Modifier.size(8.dp))
+            trailing()
         }
     }
 }
@@ -355,6 +362,35 @@ fun EmptyStateCard(
     }
 }
 
+/**
+ * Footnote/aviso pequeno e discreto. Usado para notas de rodapé como "fonte
+ * dos dados" ou cobertura limitada de uma métrica, sem ocupar muito espaço
+ * visual nem competir com os blocos principais de conteúdo.
+ */
+@Composable
+fun InfoFootnote(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.Top
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.Info,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(14.dp)
+        )
+        Spacer(Modifier.size(6.dp))
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
 @Composable
 fun MetricChip(
     label: String,
@@ -381,28 +417,6 @@ fun MetricChip(
             )
         }
     }
-}
-
-@Composable
-fun FavoriteItemCardRemote(
-    item: FiltroSalvoDto,
-    onOpen: () -> Unit,
-    onRemoveFavorite: () -> Unit
-) {
-    SavedSearchCard(
-        item = item,
-        trailing = {
-            Icon(
-                imageVector = Icons.Filled.Star,
-                contentDescription = null,
-                tint = Color(0xFFFFB300)
-            )
-        },
-        primaryAction = onOpen,
-        primaryText = stringResource(R.string.open_again),
-        secondaryAction = onRemoveFavorite,
-        secondaryText = stringResource(R.string.remove_from_favorites)
-    )
 }
 
 @Composable

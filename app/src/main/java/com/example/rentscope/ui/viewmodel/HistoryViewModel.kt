@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.rentscope.data.remote.dto.history.FavoritoMunicipioDto
 import com.example.rentscope.data.remote.dto.history.FiltroSalvoDto
 import com.example.rentscope.data.repository.HistoryRepository
 import kotlinx.coroutines.launch
@@ -20,7 +21,14 @@ class HistoryViewModel : ViewModel() {
     var historico by mutableStateOf<List<FiltroSalvoDto>>(emptyList())
         private set
 
-    var favoritos by mutableStateOf<List<FiltroSalvoDto>>(emptyList())
+    /**
+     * Lista de municípios favoritos do utilizador.
+     *
+     * Os favoritos passaram a ser por município (não por filtro), por isso
+     * esta lista é de [FavoritoMunicipioDto] e a chave para verificar se um
+     * município é favorito é o seu `codigo_municipio`.
+     */
+    var favoritos by mutableStateOf<List<FavoritoMunicipioDto>>(emptyList())
         private set
 
     fun carregarHistorico() {
@@ -51,19 +59,23 @@ class HistoryViewModel : ViewModel() {
         }
     }
 
-    fun adicionarFavorito(filtroId: String, onDone: () -> Unit = {}) {
+    fun adicionarFavorito(codigoMunicipio: Int, onDone: () -> Unit = {}) {
         viewModelScope.launch {
-            HistoryRepository.adicionarFavorito(filtroId)
-            carregarHistorico()
+            val result = HistoryRepository.adicionarFavorito(codigoMunicipio)
+            result.onFailure {
+                errorMessage = it.message ?: "Erro ao adicionar favorito."
+            }
             carregarFavoritos()
             onDone()
         }
     }
 
-    fun removerFavorito(filtroId: String, onDone: () -> Unit = {}) {
+    fun removerFavorito(codigoMunicipio: Int, onDone: () -> Unit = {}) {
         viewModelScope.launch {
-            HistoryRepository.removerFavorito(filtroId)
-            carregarHistorico()
+            val result = HistoryRepository.removerFavorito(codigoMunicipio)
+            result.onFailure {
+                errorMessage = it.message ?: "Erro ao remover favorito."
+            }
             carregarFavoritos()
             onDone()
         }
@@ -73,9 +85,13 @@ class HistoryViewModel : ViewModel() {
         viewModelScope.launch {
             HistoryRepository.removerFiltro(filtroId)
             carregarHistorico()
-            carregarFavoritos()
             onDone()
         }
+    }
+
+    /** Conveniência: indica se um município é favorito. */
+    fun isMunicipioFavorito(codigoMunicipio: Int): Boolean {
+        return favoritos.any { it.codigo_municipio == codigoMunicipio }
     }
 
     fun salvarBusca(

@@ -34,7 +34,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.rentscope.R
-import com.example.rentscope.data.remote.dto.MunicipioDto
 import com.example.rentscope.ui.components.PriceHistoryChart
 import com.example.rentscope.ui.viewmodel.MunicipioViewModel
 import com.example.rentscope.ui.viewmodel.PriceHistoryViewModel
@@ -108,14 +107,6 @@ fun PriceHistoryScreen(
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        InfoBannerCard(
-            title = stringResource(R.string.price_history_intro_title),
-            message = stringResource(R.string.price_history_intro_message),
-            icon = Icons.AutoMirrored.Filled.ShowChart
-        )
-
-        Spacer(modifier = Modifier.height(14.dp))
 
         SectionCard {
             Text(

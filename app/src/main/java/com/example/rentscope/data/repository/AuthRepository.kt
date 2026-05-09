@@ -113,9 +113,54 @@ object AuthRepository {
 
         return try {
             val json = JSONObject(rawBody)
-            json.optString("detail").ifBlank { "Erro inesperado." }
+            normalizeAuthMessage(
+                rawMessage = json.optString("detail").ifBlank {
+                    json.optString("message")
+                },
+                fallback = "Erro inesperado."
+            )
         } catch (_: Exception) {
-            "Erro inesperado."
+            normalizeAuthMessage(
+                rawMessage = rawBody,
+                fallback = "Erro inesperado."
+            )
+        }
+    }
+
+    private fun normalizeAuthMessage(rawMessage: String?, fallback: String): String {
+        val message = rawMessage?.trim().orEmpty()
+
+        if (message.isBlank()) {
+            return fallback
+        }
+
+        if (message.startsWith("{") || message.startsWith("[")) {
+            return fallback
+        }
+
+        return when {
+            message.contains("not verified", ignoreCase = true) ||
+                message.contains("verify your email", ignoreCase = true) ||
+                message.contains("verification", ignoreCase = true) -> {
+                "Verifica o teu e-mail para concluir a validacao."
+            }
+
+            message.contains("invalid credentials", ignoreCase = true) ||
+                message.contains("incorrect", ignoreCase = true) -> {
+                "E-mail ou senha incorretos."
+            }
+
+            message.contains("already", ignoreCase = true) &&
+                message.contains("email", ignoreCase = true) -> {
+                "Este e-mail ja esta registado."
+            }
+
+            message.contains("verified", ignoreCase = true) &&
+                message.contains("email", ignoreCase = true) -> {
+                "E-mail verificado com sucesso."
+            }
+
+            else -> message
         }
     }
 }

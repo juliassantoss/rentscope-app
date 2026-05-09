@@ -42,6 +42,7 @@
     <string name="home_select_continent_label">Select the continent</string>
     <string name="home_select_continent_helper">This is the first step to find the countries and cities available for your search.</string>
     <string name="continue_button">Continue</string>
+    <string name="continue_without_login">Continue without login</string>
 
     <string name="continent_europe">Europe</string>
     <string name="continent_asia">Asia</string>
@@ -53,6 +54,8 @@
     <!-- Login -->
     <string name="login_title">Log in</string>
     <string name="login_subtitle">Access your RentScope account</string>
+    <string name="login_guest_title">Want to explore first?</string>
+    <string name="login_guest_message">You can go to the home screen and get to know RentScope before signing in.</string>
     <string name="email_label">Email</string>
     <string name="password_label">Password</string>
     <string name="forgot_password">Forgot your password?</string>
@@ -68,6 +71,8 @@
     <string name="already_have_account">Already have an account? </string>
     <string name="create_account_title">Create account</string>
     <string name="create_account_subtitle">Create your RentScope account</string>
+    <string name="register_rent_preferences_title">Initial rent preference</string>
+    <string name="register_rent_preferences_message">Choose an initial normalized rent interval to use as the default base in filters.</string>
     <string name="confirm_password_label">Confirm password</string>
 
     <!-- Filters -->
@@ -114,6 +119,7 @@
     <string name="legend_title">Legend</string>
     <string name="lower_fit">Lower fit</string>
     <string name="higher_fit">Higher fit</string>
+    <string name="rent_data_coverage_note">Median rent per m² is only available for the 24 municipalities with more than 100,000 inhabitants (source: INE). For the remaining municipalities the score is calculated based on schools, hospitals and crime.</string>
 
     <!-- History -->
     <string name="login_required_history">You need to log in to access your search history.</string>
@@ -132,6 +138,10 @@
     <!-- Common -->
     <string name="code_label">Code: %1$s</string>
     <string name="favorite_action">Favorite</string>
+    <string name="add_to_favorites">Add to favorites</string>
+    <string name="added_to_favorites">Already in favorites</string>
+    <string name="login_to_favorite">Log in to favorite</string>
+    <string name="favorite_unavailable">Search unavailable for favorites</string>
     <string name="remove_action">Remove</string>
 
     <string name="rent_range_label">Normalized rent: %1$s to %2$s / 20</string>
@@ -143,7 +153,7 @@
     <!-- Results -->
     <string name="results_subtitle">Top 10 cities based on your last search.</string>
     <string name="comparison_title">Locality Comparison</string>
-    <string name="comparison_subtitle">Compare two localities side by side using your last search.</string>
+    <string name="comparison_subtitle">Compare two localities side by side.</string>
     <string name="comparison_intro_body">Select two localities to compare score, average rent, and relevant factors under the same filters.</string>
     <string name="comparison_no_search_title">No data to compare yet</string>
     <string name="comparison_no_search_message">Run a search on the map to load the localities available for comparison.</string>
@@ -242,4 +252,9 @@
     <string name="ai_quick_question_country_fit">Does this country match my preferences?</string>
     <string name="ai_quick_question_map">How do I use the choropleth map?</string>
     <string name="ai_quick_question_price_history">What does price history show me?</string>
+    <string name="error_loading_countries_title">Could not load countries</string>
+    <string name="countries_error_network_message">Check your internet connection and try again.</string>
+    <string name="countries_error_timeout_message">The connection took too long. Please try again in a moment.</string>
+    <string name="countries_error_server_message">The service is temporarily unavailable. Please try again later.</string>
+    <string name="countries_error_generic_message">An error occurred while loading countries. Please try again.</string>
 </resources>

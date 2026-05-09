@@ -36,7 +36,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.rentscope.R
-import com.example.rentscope.data.local.LastSearchData
 import com.example.rentscope.data.local.LastSearchManager
 import com.example.rentscope.data.remote.dto.score.ScoreMunicipioDto
 import com.example.rentscope.ui.components.SkeletonBlock
@@ -163,14 +162,6 @@ fun ComparisonScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        InfoBannerCard(
-            title = stringResource(R.string.comparison_guide_title),
-            message = stringResource(R.string.comparison_intro_body),
-            icon = Icons.AutoMirrored.Filled.CompareArrows
-        )
-
-        Spacer(modifier = Modifier.height(14.dp))
-
         when {
             lastSearch == null -> {
                 EmptyStateCard(
@@ -219,10 +210,6 @@ fun ComparisonScreen(
             }
 
             else -> {
-                ComparisonBasisCard(data = lastSearch)
-
-                Spacer(modifier = Modifier.height(14.dp))
-
                 ComparisonSelectorsCard(
                     leftLabel = stringResource(R.string.comparison_select_left),
                     rightLabel = stringResource(R.string.comparison_select_right),
@@ -293,47 +280,6 @@ private fun ComparisonLoadingContent() {
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun ComparisonBasisCard(data: LastSearchData) {
-    SectionCard {
-        Text(
-            text = stringResource(R.string.last_search_title),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(4.dp))
-
-        Text(
-            text = stringResource(R.string.country_label, data.countryName),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        MetricChip(
-            label = stringResource(R.string.rent_label_short),
-            value = "${formatNullable(data.rendaMin)} - ${formatNullable(data.rendaMax)} / 20",
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = stringResource(
-                R.string.weights_summary_string,
-                format1(data.pesoRenda),
-                format1(data.pesoEscolas),
-                format1(data.pesoHospitais),
-                format1(data.pesoCriminalidade)
-            ),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
     }
 }
 
@@ -584,8 +530,6 @@ private fun buildAreaSummary(item: ScoreMunicipioDto): String {
 }
 
 private fun format1(value: Float): String = String.format(Locale.getDefault(), "%.1f", value)
-
-private fun formatNullable(value: Float?): String = value?.let { format1(it) } ?: "-"
 
 private fun formatPricePerSquareMeter(value: Float?): String {
     return value?.let { String.format(Locale.getDefault(), "%.1f €/m²", it) } ?: "-"

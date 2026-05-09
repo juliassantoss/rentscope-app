@@ -39,6 +39,7 @@
     <string name="home_select_continent_label">Selecione o continente</string>
     <string name="home_select_continent_helper">Esse é o primeiro passo para encontrar países e cidades disponíveis na sua busca.</string>
     <string name="continue_button">Continuar</string>
+    <string name="continue_without_login">Continuar sem login</string>
 
     <string name="continent_europe">Europa</string>
     <string name="continent_asia">Ásia</string>
@@ -49,6 +50,8 @@
 
     <string name="login_title">Entrar</string>
     <string name="login_subtitle">Acesse sua conta no RentScope</string>
+    <string name="login_guest_title">Prefere explorar primeiro?</string>
+    <string name="login_guest_message">Pode seguir para a página inicial e conhecer o RentScope antes de entrar na sua conta.</string>
     <string name="email_label">E-mail</string>
     <string name="password_label">Senha</string>
     <string name="forgot_password">Esqueceu sua senha?</string>
@@ -62,6 +65,8 @@
     <string name="already_have_account">Já tem conta? </string>
     <string name="create_account_title">Criar conta</string>
     <string name="create_account_subtitle">Crie sua conta no RentScope</string>
+    <string name="register_rent_preferences_title">Preferência inicial de renda</string>
+    <string name="register_rent_preferences_message">Escolha um intervalo inicial de renda normalizada para usar como base nos filtros.</string>
     <string name="confirm_password_label">Confirmar senha</string>
 
     <string name="filters_title">Filtros — %1$s</string>
@@ -96,6 +101,7 @@
     <string name="legend_title">Legenda</string>
     <string name="lower_fit">Menor adequação</string>
     <string name="higher_fit">Maior adequação</string>
+    <string name="rent_data_coverage_note">A renda mediana por m² só está disponível para os 24 concelhos com mais de 100 mil habitantes (fonte: INE). Para os restantes municípios, o score é calculado com base em escolas, hospitais e criminalidade.</string>
 
     <string name="login_required_history">Precisa fazer login para aceder ao histórico das suas pesquisas.</string>
     <string name="history_subtitle">As suas pesquisas guardadas aparecem aqui.</string>
@@ -109,6 +115,10 @@
 
     <string name="code_label">Código: %1$s</string>
     <string name="favorite_action">Favoritar</string>
+    <string name="add_to_favorites">Adicionar aos favoritos</string>
+    <string name="added_to_favorites">Já está nos favoritos</string>
+    <string name="login_to_favorite">Entrar para favoritar</string>
+    <string name="favorite_unavailable">Pesquisa indisponível para favorito</string>
     <string name="remove_action">Remover</string>
     <string name="rent_range_label">Renda normalizada: %1$s até %2$s / 20</string>
     <string name="weights_summary_generic">Pesos — Renda: %1$s | Escolas: %2$s | Hospitais: %3$s | Criminalidade: %4$s</string>
@@ -117,7 +127,7 @@
 
     <string name="results_subtitle">Top 10 cidades com melhor adequação de acordo com a última pesquisa.</string>
     <string name="comparison_title">Comparação de Localidades</string>
-    <string name="comparison_subtitle">Compare duas localidades lado a lado com base na sua última pesquisa.</string>
+    <string name="comparison_subtitle">Compare duas localidades lado a lado.</string>
     <string name="comparison_intro_body">Selecione duas localidades para ver score, renda média e fatores relevantes no mesmo contexto de filtros.</string>
     <string name="comparison_no_search_title">Ainda não há dados para comparar</string>
     <string name="comparison_no_search_message">Faça uma pesquisa no mapa para carregar as localidades disponíveis para comparação.</string>
@@ -207,4 +217,9 @@
     <string name="ai_quick_question_country_fit">Este país parece adequado com as minhas preferências?</string>
     <string name="ai_quick_question_map">Como usar o mapa coroplético?</string>
     <string name="ai_quick_question_price_history">O que o histórico de preços me mostra?</string>
+    <string name="error_loading_countries_title">NÃ£o foi possÃ­vel carregar os paÃ­ses</string>
+    <string name="countries_error_network_message">Verifica a ligaÃ§Ã£o Ã  internet e tenta novamente.</string>
+    <string name="countries_error_timeout_message">A ligaÃ§Ã£o demorou demasiado tempo. Tenta novamente em instantes.</string>
+    <string name="countries_error_server_message">O serviÃ§o estÃ¡ temporariamente indisponÃ­vel. Tenta novamente daqui a pouco.</string>
+    <string name="countries_error_generic_message">Ocorreu um erro ao carregar os paÃ­ses. Tenta novamente.</string>
 </resources>

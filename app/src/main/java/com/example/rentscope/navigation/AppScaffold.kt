@@ -52,6 +52,21 @@ import com.example.rentscope.data.repository.AuthRepository
 import kotlinx.coroutines.launch
 
 private val BrandBlue = Color(0xFF2F86D6)
+private val TopLevelRoutes = setOf(
+    Routes.HOME,
+    Routes.LANGUAGE,
+    Routes.RESULTS,
+    Routes.HISTORY,
+    Routes.FAVORITES,
+    Routes.COMPARISON,
+    Routes.PRICE_HISTORY,
+    Routes.AI_ASSISTANT
+)
+private val AuthRoutes = setOf(
+    Routes.LOGIN,
+    Routes.NEW_ACCOUNT,
+    Routes.FORGOT_PASSWORD
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,9 +76,12 @@ fun AppScaffold(
     content: @Composable (PaddingValues) -> Unit
 ) {
     val context = LocalContext.current
-    val canGoBack = navController.previousBackStackEntry != null
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val isAuthRoute = currentDestination.isRouteIn(AuthRoutes)
+    val canGoBack = !isAuthRoute &&
+        !currentDestination.isRouteIn(TopLevelRoutes) &&
+        navController.previousBackStackEntry != null
 
     var isLoggedIn by remember { mutableStateOf(false) }
     var userEmail by remember { mutableStateOf<String?>(null) }
@@ -88,6 +106,7 @@ fun AppScaffold(
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         ModalNavigationDrawer(
             drawerState = drawerState,
+            gesturesEnabled = false,
             drawerContent = {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                     AppDrawer(
@@ -119,110 +138,114 @@ fun AppScaffold(
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                 Scaffold(
                     topBar = {
-                        TopAppBar(
-                            title = { Text(stringResource(R.string.app_title)) },
-                            navigationIcon = {
-                                if (canGoBack) {
-                                    IconButton(onClick = { navController.popBackStack() }) {
+                        if (!isAuthRoute) {
+                            TopAppBar(
+                                title = { Text(stringResource(R.string.app_title)) },
+                                navigationIcon = {
+                                    if (canGoBack) {
+                                        IconButton(onClick = { navController.navigateUp() }) {
+                                            Icon(
+                                                Icons.AutoMirrored.Filled.ArrowBack,
+                                                contentDescription = stringResource(R.string.back)
+                                            )
+                                        }
+                                    }
+                                },
+                                actions = {
+                                    IconButton(onClick = { scope.launch { drawerState.open() } }) {
                                         Icon(
-                                            Icons.AutoMirrored.Filled.ArrowBack,
-                                            contentDescription = stringResource(R.string.back)
+                                            Icons.Filled.Menu,
+                                            contentDescription = stringResource(R.string.menu)
                                         )
                                     }
-                                }
-                            },
-                            actions = {
-                                IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                                    Icon(
-                                        Icons.Filled.Menu,
-                                        contentDescription = stringResource(R.string.menu)
-                                    )
-                                }
-                            },
-                            colors = TopAppBarDefaults.topAppBarColors(
-                                containerColor = BrandBlue,
-                                titleContentColor = Color.White,
-                                navigationIconContentColor = Color.White,
-                                actionIconContentColor = Color.White
+                                },
+                                colors = TopAppBarDefaults.topAppBarColors(
+                                    containerColor = BrandBlue,
+                                    titleContentColor = Color.White,
+                                    navigationIconContentColor = Color.White,
+                                    actionIconContentColor = Color.White
+                                )
                             )
-                        )
+                        }
                     },
                     bottomBar = {
-                        Box(
-                            modifier = Modifier
-                                .navigationBarsPadding()
-                                .padding(horizontal = 16.dp, vertical = 10.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Card(
-                                shape = RoundedCornerShape(24.dp),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = Color.White.copy(alpha = 0.96f)
-                                ),
-                                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                        if (!isAuthRoute) {
+                            Box(
+                                modifier = Modifier
+                                    .navigationBarsPadding()
+                                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                                contentAlignment = Alignment.Center
                             ) {
-                                Row(
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp)
+                                Card(
+                                    shape = RoundedCornerShape(24.dp),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = Color.White.copy(alpha = 0.96f)
+                                    ),
+                                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                                 ) {
-                                    NavigationBarItem(
-                                        selected = currentDestination.isRouteSelected(Routes.LANGUAGE),
-                                        onClick = { navController.navigateSingleTopTo(Routes.LANGUAGE) },
-                                        icon = {
-                                            Icon(
-                                                Icons.Filled.Language,
-                                                contentDescription = stringResource(R.string.language),
-                                                modifier = Modifier.size(20.dp)
+                                    Row(
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp)
+                                    ) {
+                                        NavigationBarItem(
+                                            selected = currentDestination.isRouteSelected(Routes.LANGUAGE),
+                                            onClick = { navController.navigateSingleTopTo(Routes.LANGUAGE) },
+                                            icon = {
+                                                Icon(
+                                                    Icons.Filled.Language,
+                                                    contentDescription = stringResource(R.string.language),
+                                                    modifier = Modifier.size(20.dp)
+                                                )
+                                            },
+                                            label = { Text(stringResource(R.string.language)) },
+                                            colors = NavigationBarItemDefaults.colors(
+                                                indicatorColor = BrandBlue.copy(alpha = 0.15f),
+                                                selectedIconColor = Color.Black,
+                                                selectedTextColor = Color.Black,
+                                                unselectedIconColor = Color.Black,
+                                                unselectedTextColor = Color.Black
                                             )
-                                        },
-                                        label = { Text(stringResource(R.string.language)) },
-                                        colors = NavigationBarItemDefaults.colors(
-                                            indicatorColor = BrandBlue.copy(alpha = 0.15f),
-                                            selectedIconColor = Color.Black,
-                                            selectedTextColor = Color.Black,
-                                            unselectedIconColor = Color.Black,
-                                            unselectedTextColor = Color.Black
                                         )
-                                    )
 
-                                    NavigationBarItem(
-                                        selected = currentDestination.isRouteSelected(Routes.HOME),
-                                        onClick = { navController.navigateSingleTopTo(Routes.HOME) },
-                                        icon = {
-                                            Icon(
-                                                Icons.Filled.Home,
-                                                contentDescription = stringResource(R.string.home),
-                                                modifier = Modifier.size(20.dp)
+                                        NavigationBarItem(
+                                            selected = currentDestination.isRouteSelected(Routes.HOME),
+                                            onClick = { navController.navigateSingleTopTo(Routes.HOME) },
+                                            icon = {
+                                                Icon(
+                                                    Icons.Filled.Home,
+                                                    contentDescription = stringResource(R.string.home),
+                                                    modifier = Modifier.size(20.dp)
+                                                )
+                                            },
+                                            label = { Text(stringResource(R.string.home)) },
+                                            colors = NavigationBarItemDefaults.colors(
+                                                indicatorColor = BrandBlue.copy(alpha = 0.15f),
+                                                selectedIconColor = Color.Black,
+                                                selectedTextColor = Color.Black,
+                                                unselectedIconColor = Color.Black,
+                                                unselectedTextColor = Color.Black
                                             )
-                                        },
-                                        label = { Text(stringResource(R.string.home)) },
-                                        colors = NavigationBarItemDefaults.colors(
-                                            indicatorColor = BrandBlue.copy(alpha = 0.15f),
-                                            selectedIconColor = Color.Black,
-                                            selectedTextColor = Color.Black,
-                                            unselectedIconColor = Color.Black,
-                                            unselectedTextColor = Color.Black
                                         )
-                                    )
 
-                                    NavigationBarItem(
-                                        selected = currentDestination.isRouteSelected(Routes.RESULTS),
-                                        onClick = { navController.navigateSingleTopTo(Routes.RESULTS) },
-                                        icon = {
-                                            Icon(
-                                                Icons.AutoMirrored.Filled.ShowChart,
-                                                contentDescription = stringResource(R.string.results),
-                                                modifier = Modifier.size(20.dp)
+                                        NavigationBarItem(
+                                            selected = currentDestination.isRouteSelected(Routes.RESULTS),
+                                            onClick = { navController.navigateSingleTopTo(Routes.RESULTS) },
+                                            icon = {
+                                                Icon(
+                                                    Icons.AutoMirrored.Filled.ShowChart,
+                                                    contentDescription = stringResource(R.string.results),
+                                                    modifier = Modifier.size(20.dp)
+                                                )
+                                            },
+                                            label = { Text(stringResource(R.string.results)) },
+                                            colors = NavigationBarItemDefaults.colors(
+                                                indicatorColor = BrandBlue.copy(alpha = 0.15f),
+                                                selectedIconColor = Color.Black,
+                                                selectedTextColor = Color.Black,
+                                                unselectedIconColor = Color.Black,
+                                                unselectedTextColor = Color.Black
                                             )
-                                        },
-                                        label = { Text(stringResource(R.string.results)) },
-                                        colors = NavigationBarItemDefaults.colors(
-                                            indicatorColor = BrandBlue.copy(alpha = 0.15f),
-                                            selectedIconColor = Color.Black,
-                                            selectedTextColor = Color.Black,
-                                            unselectedIconColor = Color.Black,
-                                            unselectedTextColor = Color.Black
                                         )
-                                    )
+                                    }
                                 }
                             }
                         }
@@ -240,6 +263,10 @@ private fun NavDestination?.isRouteSelected(route: String): Boolean {
     return this?.hierarchy?.any { destination ->
         destination.route?.startsWith(route) == true
     } == true
+}
+
+private fun NavDestination?.isRouteIn(routes: Set<String>): Boolean {
+    return routes.any { route -> this.isRouteSelected(route) }
 }
 
 private fun NavController.navigateSingleTopTo(route: String) {

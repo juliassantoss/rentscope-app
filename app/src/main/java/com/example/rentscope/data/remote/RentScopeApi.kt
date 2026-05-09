@@ -11,6 +11,7 @@ import com.example.rentscope.data.remote.dto.auth.RegisterRequestDto
 import com.example.rentscope.data.remote.dto.auth.TokenResponseDto
 import com.example.rentscope.data.remote.dto.auth.UserDto
 import com.example.rentscope.data.remote.dto.history.FavoritoCreateDto
+import com.example.rentscope.data.remote.dto.history.FavoritoMunicipioDto
 import com.example.rentscope.data.remote.dto.history.FiltroSalvoCreateDto
 import com.example.rentscope.data.remote.dto.history.FiltroSalvoDto
 import com.example.rentscope.data.remote.dto.pricehistory.PriceHistoryDto
@@ -74,11 +75,11 @@ interface RentScopeApi {
     ): Response<Unit>
 
     @GET("historico/favoritos")
-    suspend fun listarFavoritos(): Response<List<FiltroSalvoDto>>
+    suspend fun listarFavoritos(): Response<List<FavoritoMunicipioDto>>
 
-    @DELETE("historico/favoritos/{filtroId}")
+    @DELETE("historico/favoritos/{codigoMunicipio}")
     suspend fun removerFavorito(
-        @Path("filtroId") filtroId: String
+        @Path("codigoMunicipio") codigoMunicipio: Int
     ): Response<Unit>
 
     @GET("renda/historico")

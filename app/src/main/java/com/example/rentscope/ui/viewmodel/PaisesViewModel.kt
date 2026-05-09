@@ -9,6 +9,10 @@ import com.example.rentscope.data.repository.PaisesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.io.IOException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
+import retrofit2.HttpException
 
 data class PaisesUiState(
     val loading: Boolean = false,
@@ -34,9 +38,19 @@ class PaisesViewModel : ViewModel() {
                 _state.value = PaisesUiState(
                     loading = false,
                     paises = emptyList(),
-                    error = (e.message ?: "Erro ao buscar /paises")
+                    error = mapCountriesErrorKey(e)
                 )
             }
+        }
+    }
+
+    private fun mapCountriesErrorKey(error: Throwable): String {
+        return when (error) {
+            is UnknownHostException -> "countries_error_network"
+            is SocketTimeoutException -> "countries_error_timeout"
+            is HttpException -> "countries_error_server"
+            is IOException -> "countries_error_network"
+            else -> "countries_error_generic"
         }
     }
 }

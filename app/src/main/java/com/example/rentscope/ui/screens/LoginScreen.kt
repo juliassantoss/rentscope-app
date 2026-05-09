@@ -22,6 +22,7 @@ import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -46,6 +47,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.rentscope.R
+import com.example.rentscope.ui.components.MascotOrb
+import com.example.rentscope.ui.components.MascotState
 
 private val AuthBlue = Color(0xFF00708E)
 
@@ -54,6 +57,7 @@ fun LoginScreen(
     padding: PaddingValues,
     isLoading: Boolean = false,
     errorMessage: String? = null,
+    onContinueWithoutLoginClick: () -> Unit = {},
     onForgotPasswordClick: () -> Unit = {},
     onCreateAccountClick: () -> Unit = {},
     onLoginClick: (email: String, password: String) -> Unit = { _, _ -> }
@@ -162,6 +166,12 @@ fun LoginScreen(
 
         Spacer(Modifier.height(16.dp))
 
+        GuestAccessCard(
+            onContinueWithoutLoginClick = onContinueWithoutLoginClick
+        )
+
+        Spacer(Modifier.height(16.dp))
+
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = stringResource(R.string.no_account_yet),
@@ -173,6 +183,61 @@ fun LoginScreen(
             ) {
                 Text(
                     text = stringResource(R.string.create_account_action),
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun GuestAccessCard(
+    onContinueWithoutLoginClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFEFF5FF)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 18.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            MascotOrb(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(104.dp),
+                orbSize = 88.dp,
+                state = MascotState.IDLE
+            )
+
+            Spacer(Modifier.height(8.dp))
+
+            Text(
+                text = stringResource(R.string.login_guest_title),
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(Modifier.height(4.dp))
+
+            Text(
+                text = stringResource(R.string.login_guest_message),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(Modifier.height(14.dp))
+
+            Button(
+                onClick = onContinueWithoutLoginClick,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(14.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = AuthBlue)
+            ) {
+                Text(
+                    text = stringResource(R.string.continue_without_login),
                     fontWeight = FontWeight.SemiBold
                 )
             }

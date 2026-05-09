@@ -29,6 +29,9 @@ data class ScoreMunicipioDto(
     @Json(name = "total_crimes")
     val totalCrimes: Int,
 
+    @Json(name = "score_renda")
+    val scoreRenda: Float,
+
     @Json(name = "score_escolas")
     val scoreEscolas: Float,
 
