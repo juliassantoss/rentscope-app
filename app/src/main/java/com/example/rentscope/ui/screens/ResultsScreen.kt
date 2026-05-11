@@ -16,9 +16,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ShowChart
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.StarBorder
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -48,7 +51,6 @@ import java.util.Locale
 private val ResultsBlue = Color(0xFF00708E)
 private val FavoriteYellow = Color(0xFFFFB300)
 
-@Suppress("UNUSED_PARAMETER")
 @Composable
 fun ResultsScreen(
     padding: PaddingValues,
@@ -94,7 +96,37 @@ fun ResultsScreen(
             icon = Icons.AutoMirrored.Filled.ShowChart
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(14.dp))
+
+        // Botão proeminente para voltar ao mapa da última pesquisa.
+        // Aparece em destaque no topo, logo a seguir ao header, antes da
+        // lista de resultados — assim o utilizador identifica rapidamente
+        // o caminho de regresso à pesquisa quando precisa de ajustar filtros.
+        if (lastSearch != null) {
+            Button(
+                onClick = { onOpenMapClick(lastSearch) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                shape = RoundedCornerShape(14.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = ResultsBlue)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Map,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.size(8.dp))
+                Text(
+                    text = stringResource(R.string.back_to_search),
+                    color = Color.White,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
+        }
 
         if (lastSearch == null) {
             EmptyStateCard(

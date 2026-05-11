@@ -74,6 +74,8 @@
     <string name="register_rent_preferences_title">Initial rent preference</string>
     <string name="register_rent_preferences_message">Choose an initial normalized rent interval to use as the default base in filters.</string>
     <string name="confirm_password_label">Confirm password</string>
+    <string name="show_password">Show password</string>
+    <string name="hide_password">Hide password</string>
 
     <!-- Filters -->
     <string name="filters_title">Filters — %1$s</string>
@@ -90,16 +92,27 @@
     <string name="filters_weights_title">Criteria importance</string>
 
     <string name="weight_rent_title">Rent weight</string>
-    <string name="weight_rent_subtitle">How much the normalized rent interval affects the score.</string>
+    <string name="weight_rent_subtitle">The higher, the more the score favours municipalities with lower median rent.</string>
+    <string name="weight_rent_info_title">How the rent weight works</string>
+    <string name="weight_rent_info_body">Median rent per m² data is published quarterly by INE — the Portuguese National Statistics Institute. Only municipalities with more than 100,000 inhabitants have official values (24 out of 308); for the rest, this dimension does not contribute to the score.\n\nScoring is inverse: the municipality with the lowest available rent gets 1.0, the highest gets 0.0. Increasing the weight favours more affordable municipalities.</string>
 
     <string name="weight_schools_title">Schools weight</string>
-    <string name="weight_schools_subtitle">How much schools affect the score.</string>
+    <string name="weight_schools_subtitle">The higher, the more the score values school availability.</string>
+    <string name="weight_schools_info_title">How the schools weight works</string>
+    <string name="weight_schools_info_body">Number of schools registered per municipality (official Ministry of Education data for the most recent school year, all 308 municipalities).\n\nThe count is smoothed with the natural logarithm before normalization so that small municipalities are not crushed by the big urban centres. The municipality with most schools gets 1.0, the one with fewest gets 0.0.</string>
 
     <string name="weight_hospitals_title">Hospitals weight</string>
-    <string name="weight_hospitals_subtitle">How much hospitals affect the score.</string>
+    <string name="weight_hospitals_subtitle">The higher, the more the score values hospital availability.</string>
+    <string name="weight_hospitals_info_title">How the hospitals weight works</string>
+    <string name="weight_hospitals_info_body">Number of hospitals registered per municipality in 2024 (official data, all 308 municipalities).\n\nThe count is smoothed with the natural logarithm before normalization to reduce the effect of large urban areas. The municipality with most hospitals gets 1.0, the one with fewest gets 0.0.</string>
 
     <string name="weight_crime_title">Crime weight</string>
-    <string name="weight_crime_subtitle">How much crime affects the score.</string>
+    <string name="weight_crime_subtitle">The higher, the more the score penalises municipalities with more crime.</string>
+    <string name="weight_crime_info_title">How the crime weight works</string>
+    <string name="weight_crime_info_body">Total crimes registered per municipality in 2024 (official data, all 308 municipalities).\n\nScoring is inverse: the municipality with the fewest crimes gets 1.0, the one with most gets 0.0. Increasing the weight pushes the ranking towards safer areas.</string>
+
+    <string name="info_action">More info</string>
+    <string name="info_dialog_close">Close</string>
 
     <string name="filters_summary_title">Filters summary</string>
     <string name="filters_summary_rent">Normalized rent: %1$s to %2$s / 20</string>
@@ -169,6 +182,11 @@
     <string name="comparison_search_placeholder">Search municipality</string>
     <string name="comparison_no_matches">No localities found</string>
     <string name="comparison_score_title">Score</string>
+    <string name="comparison_pick_localities">Pick the localities to compare</string>
+    <string name="comparison_pick_helper">Tick the municipalities you want to compare (at least 2). The comparison shows up below.</string>
+    <string name="comparison_selected_count">%1$d selected</string>
+    <string name="comparison_min_two_required">Select at least two localities to start the comparison.</string>
+    <string name="comparison_clear_selection">Clear selection</string>
     <string name="results_portugal_only">Detailed results are currently available only for Portugal.</string>
 
     <string name="no_results_title">No results yet</string>
@@ -188,6 +206,7 @@
     <string name="weights_summary_string">Weights — Rent: %1$s | Schools: %2$s | Hospitals: %3$s | Crime: %4$s</string>
 
     <string name="open_map_for_search">Open map</string>
+    <string name="back_to_search">Back to search</string>
 
     <string name="score_label">Score: %1$s</string>
     <string name="city_rent_label">Rent: %1$s €/m²</string>
@@ -218,6 +237,7 @@
     <string name="no_countries_returned">No countries returned from API.</string>
 
     <string name="price_history">Price History</string>
+    <string name="price_history_short">History</string>
     <string name="search_municipality_label">Select municipality</string>
     <string name="price_history_subtitle">Track the average price per square meter over time.</string>
     <string name="price_history_intro_title">History by municipality</string>
@@ -245,6 +265,9 @@
     <string name="ai_suggestions_title">Quick suggestions</string>
     <string name="ai_input_placeholder">Ask Scopey...</string>
     <string name="ai_welcome_message">Hi! Ask me anything about municipalities, maps, filters, prices, or how to use RentScope.</string>
+    <string name="idle_mascot_prompt">Hi! Can I help with anything?</string>
+    <string name="idle_mascot_dismiss">Close</string>
+    <string name="idle_mascot_open_chat">Chat with Scopey</string>
     <string name="ai_error_reply">I could not answer right now. Please try again in a moment.</string>
     <string name="ai_quick_question_results">How do I interpret RentScope results?</string>
     <string name="ai_quick_question_weights">What do the filter weights mean?</string>

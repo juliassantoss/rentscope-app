@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.CompareArrows
-import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Close
@@ -149,15 +148,6 @@ fun AppDrawer(
             selected = false,
             onClick = { onItemClick(Routes.HISTORY) },
             icon = { Icon(Icons.Default.AccessTime, contentDescription = null) },
-            colors = drawerItemColors,
-            modifier = Modifier.padding(horizontal = 10.dp)
-        )
-
-        NavigationDrawerItem(
-            label = { Text(stringResource(R.string.price_history)) },
-            selected = false,
-            onClick = { onItemClick(Routes.PRICE_HISTORY) },
-            icon = { Icon(Icons.AutoMirrored.Filled.ShowChart, contentDescription = null) },
             colors = drawerItemColors,
             modifier = Modifier.padding(horizontal = 10.dp)
         )

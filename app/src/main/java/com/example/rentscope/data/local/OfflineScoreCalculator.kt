@@ -144,10 +144,23 @@ internal object OfflineScoreCalculator {
         rendaMax: Float?,
         bounds: ScoreNormalizationBounds
     ): Float {
+        // Caso novo (UI atual): a UI já não recolhe min/max — ambos chegam null.
+        // Tratamos a renda como criminalidade: "menos é melhor" — município com
+        // a renda mais baixa nos dados disponíveis recebe 1.0; o de renda mais
+        // alta recebe 0.0. Municípios sem dados de renda contribuem com 0.
         if (rendaMin == null && rendaMax == null) {
-            return 1f
+            val current = valorMedioM2?.toDouble() ?: return 0f
+            val minData = bounds.minRendaData ?: return 1f
+            val maxData = bounds.maxRendaData ?: return 1f
+            if (maxData == minData) return 1f
+            return (1.0 - ((current - minData) / (maxData - minData)))
+                .coerceIn(0.0, 1.0)
+                .toFloat()
         }
 
+        // Caso legacy (histórico antigo guardou min/max): mantemos a lógica
+        // original baseada em intervalo, para que abrir uma pesquisa antiga
+        // produza o mesmo ranking que produziu na altura.
         val currentRent = valorMedioM2?.toDouble()
         val minRent = rendaMin?.toDouble()
         val maxRent = rendaMax?.toDouble()

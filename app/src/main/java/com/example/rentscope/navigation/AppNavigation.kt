@@ -278,8 +278,8 @@ fun AppNavigation() {
                     initialPesoHospitais = pesoHospitais,
                     initialPesoCriminalidade = pesoCriminalidade,
                     onSaveClick = { newRendaMin, newRendaMax, newPesoRenda, newPesoEscolas, newPesoHospitais, newPesoCriminalidade ->
-                        navController.previousBackStackEntry?.savedStateHandle?.set("rendaMin", newRendaMin)
-                        navController.previousBackStackEntry?.savedStateHandle?.set("rendaMax", newRendaMax)
+                        navController.previousBackStackEntry?.savedStateHandle?.set<Float?>("rendaMin", newRendaMin)
+                        navController.previousBackStackEntry?.savedStateHandle?.set<Float?>("rendaMax", newRendaMax)
                         navController.previousBackStackEntry?.savedStateHandle?.set("pesoRenda", newPesoRenda)
                         navController.previousBackStackEntry?.savedStateHandle?.set("pesoEscolas", newPesoEscolas)
                         navController.previousBackStackEntry?.savedStateHandle?.set("pesoHospitais", newPesoHospitais)

@@ -14,27 +14,42 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.rentscope.R
 import com.example.rentscope.data.remote.dto.history.FiltroSalvoDto
@@ -360,6 +375,63 @@ fun EmptyStateCard(
             }
         }
     }
+}
+
+/**
+ * Campo de palavra-passe com toggle de visibilidade (olhinho).
+ *
+ * Reutilizado em todos os formulários de autenticação (login, registo,
+ * recuperação de senha) para garantir UX consistente. Por defeito mostra o
+ * texto mascarado e um ícone de olho que, quando clicado, alterna entre
+ * mostrar/ocultar a senha em texto claro.
+ */
+@Composable
+fun PasswordOutlinedTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    leadingIcon: ImageVector? = Icons.Filled.Lock,
+    imeAction: ImeAction = ImeAction.Done,
+    onImeDone: (() -> Unit)? = null
+) {
+    var visible by remember { mutableStateOf(false) }
+
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = modifier,
+        label = { Text(label) },
+        leadingIcon = leadingIcon?.let {
+            { Icon(it, contentDescription = null) }
+        },
+        trailingIcon = {
+            IconButton(onClick = { visible = !visible }) {
+                Icon(
+                    imageVector = if (visible) Icons.Filled.VisibilityOff
+                                  else Icons.Filled.Visibility,
+                    contentDescription = stringResource(
+                        if (visible) R.string.hide_password
+                        else R.string.show_password
+                    )
+                )
+            }
+        },
+        singleLine = true,
+        enabled = enabled,
+        shape = RoundedCornerShape(14.dp),
+        visualTransformation = if (visible) VisualTransformation.None
+                               else PasswordVisualTransformation(),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password,
+            imeAction = imeAction
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = { onImeDone?.invoke() },
+            onNext = { /* deixa o foco passar normalmente */ }
+        )
+    )
 }
 
 /**

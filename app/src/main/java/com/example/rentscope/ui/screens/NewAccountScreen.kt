@@ -17,7 +17,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -41,7 +40,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.rentscope.R
 
@@ -101,38 +99,27 @@ fun NewAccountScreen(
 
                 Spacer(Modifier.height(12.dp))
 
-                OutlinedTextField(
+                PasswordOutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
+                    label = stringResource(R.string.password_label),
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text(stringResource(R.string.password_label)) },
-                    leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = null) },
-                    singleLine = true,
                     enabled = !isLoading,
-                    shape = RoundedCornerShape(14.dp),
-                    visualTransformation = PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.Next
-                    )
+                    imeAction = ImeAction.Next
                 )
 
                 Spacer(Modifier.height(12.dp))
 
-                OutlinedTextField(
+                PasswordOutlinedTextField(
                     value = confirmPassword,
                     onValueChange = { confirmPassword = it },
+                    label = stringResource(R.string.confirm_password_label),
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text(stringResource(R.string.confirm_password_label)) },
-                    leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = null) },
-                    singleLine = true,
                     enabled = !isLoading,
-                    shape = RoundedCornerShape(14.dp),
-                    visualTransformation = PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.Done
-                    )
+                    imeAction = ImeAction.Done,
+                    onImeDone = {
+                        onCreateAccountClick(email.trim(), password, confirmPassword)
+                    }
                 )
 
                 Spacer(Modifier.height(16.dp))

@@ -68,6 +68,8 @@
     <string name="register_rent_preferences_title">Preferencia inicial de renta</string>
     <string name="register_rent_preferences_message">Elige un intervalo inicial de renta normalizada para usarlo como base predeterminada en los filtros.</string>
     <string name="confirm_password_label">Confirmar contraseña</string>
+    <string name="show_password">Mostrar contraseña</string>
+    <string name="hide_password">Ocultar contraseña</string>
 
     <string name="filters_title">Filtros — %1$s</string>
     <string name="filters_intro">Todos los municipios siguen en el mapa. Los filtros y pesos ajustan el grado de adecuación de cada uno.</string>
@@ -79,13 +81,23 @@
     <string name="rent_scale_body">No es precio en euros. Es una escala interna: 0 indica renta más baja y 20 renta más alta. El score considera municipios dentro del intervalo elegido.</string>
     <string name="filters_weights_title">Importancia de cada criterio</string>
     <string name="weight_rent_title">Peso de la renta</string>
-    <string name="weight_rent_subtitle">Cuanto mayor sea, más valora el score los municipios dentro del intervalo normalizado de renta.</string>
+    <string name="weight_rent_subtitle">Cuanto mayor sea, más valora el score los municipios con renta mediana más baja.</string>
+    <string name="weight_rent_info_title">Cómo funciona el peso de la renta</string>
+    <string name="weight_rent_info_body">Los datos de renta mediana por m² los publica trimestralmente el INE — Estadísticas de Rentas de Vivienda a nivel local. Solo los municipios con más de 100 000 habitantes tienen valores oficiales (24 de 308); para el resto, esta dimensión no contribuye al score.\n\nLa puntuación es inversa: el municipio con la renta más baja disponible recibe 1.0; el de la renta más alta recibe 0.0. Aumentar el peso favorece municipios más asequibles.</string>
     <string name="weight_schools_title">Peso de las escuelas</string>
     <string name="weight_schools_subtitle">Cuanto mayor sea, más valora el score la oferta de escuelas.</string>
+    <string name="weight_schools_info_title">Cómo funciona el peso de las escuelas</string>
+    <string name="weight_schools_info_body">Número de escuelas registradas por municipio (datos oficiales del Ministerio de Educación para el curso más reciente, los 308 municipios).\n\nEl conteo se suaviza con logaritmo natural antes de la normalización para que las diferencias entre municipios pequeños no queden eclipsadas por las grandes ciudades. El municipio con más escuelas obtiene 1.0; el de menos, 0.0.</string>
     <string name="weight_hospitals_title">Peso de los hospitales</string>
     <string name="weight_hospitals_subtitle">Cuanto mayor sea, más valora el score la oferta de hospitales.</string>
+    <string name="weight_hospitals_info_title">Cómo funciona el peso de los hospitales</string>
+    <string name="weight_hospitals_info_body">Número de hospitales registrados por municipio en 2024 (datos oficiales, los 308 municipios).\n\nEl conteo se suaviza con logaritmo natural antes de la normalización para reducir el efecto de las grandes urbes. El municipio con más hospitales obtiene 1.0; el de menos, 0.0.</string>
     <string name="weight_crime_title">Peso de la criminalidad</string>
     <string name="weight_crime_subtitle">Cuanto mayor sea, más penaliza el score los municipios con mayor criminalidad.</string>
+    <string name="weight_crime_info_title">Cómo funciona el peso de la criminalidad</string>
+    <string name="weight_crime_info_body">Total de delitos registrados por municipio en 2024 (datos oficiales, los 308 municipios).\n\nLa puntuación es inversa: el municipio con menos delitos obtiene 1.0; el de más, 0.0. Aumentar el peso acerca el ranking a las zonas más seguras.</string>
+    <string name="info_action">Más información</string>
+    <string name="info_dialog_close">Cerrar</string>
     <string name="filters_summary_title">Resumen de filtros</string>
     <string name="filters_summary_rent">Renta normalizada: %1$s hasta %2$s / 20</string>
     <string name="filters_summary_weights">Pesos — Renta: %1$s | Escuelas: %2$s | Hospitales: %3$s | Criminalidad: %4$s</string>
@@ -143,6 +155,11 @@
     <string name="comparison_search_placeholder">Buscar municipio</string>
     <string name="comparison_no_matches">No se encontraron localidades</string>
     <string name="comparison_score_title">Score</string>
+    <string name="comparison_pick_localities">Elige las localidades a comparar</string>
+    <string name="comparison_pick_helper">Marca los municipios que quieres comparar (mínimo 2). La comparación aparece debajo.</string>
+    <string name="comparison_selected_count">%1$d seleccionados</string>
+    <string name="comparison_min_two_required">Selecciona al menos dos localidades para iniciar la comparación.</string>
+    <string name="comparison_clear_selection">Limpiar selección</string>
     <string name="results_portugal_only">Por ahora, los resultados detallados están disponibles solo para Portugal.</string>
     <string name="no_results_title">Aún no hay resultados</string>
     <string name="no_results_message">Haz una búsqueda en el mapa para ver aquí las 10 mejores ciudades.</string>
@@ -156,6 +173,7 @@
     <string name="country_label">País: %1$s</string>
     <string name="weights_summary_string">Pesos — Renta: %1$s | Escuelas: %2$s | Hospitales: %3$s | Criminalidad: %4$s</string>
     <string name="open_map_for_search">Abrir mapa de esta búsqueda</string>
+    <string name="back_to_search">Volver a la búsqueda</string>
     <string name="score_label">Score: %1$s</string>
     <string name="city_rent_label">Renta: %1$s €/m²</string>
     <string name="rent_label_short">Renta</string>
@@ -183,6 +201,7 @@
     <string name="no_countries_returned">Ningún país fue devuelto por la API (lista vacía).</string>
 
     <string name="price_history">Historial de precios</string>
+    <string name="price_history_short">Historial</string>
     <string name="search_municipality_label">Seleccionar municipio</string>
     <string name="price_history_subtitle">Sigue la evolución del precio medio por metro cuadrado.</string>
     <string name="price_history_intro_title">Historial por municipio</string>
@@ -210,6 +229,9 @@
     <string name="ai_suggestions_title">Sugerencias rápidas</string>
     <string name="ai_input_placeholder">Pregunta a Scopey...</string>
     <string name="ai_welcome_message">¡Hola! Pregúntame cualquier cosa sobre municipios, mapas, filtros, precios o cómo usar RentScope.</string>
+    <string name="idle_mascot_prompt">¡Hola! ¿Te puedo ayudar con algo?</string>
+    <string name="idle_mascot_dismiss">Cerrar</string>
+    <string name="idle_mascot_open_chat">Hablar con Scopey</string>
     <string name="ai_error_reply">No pude responder ahora mismo. Inténtalo de nuevo dentro de un momento.</string>
     <string name="ai_quick_question_results">¿Cómo interpreto los resultados de RentScope?</string>
     <string name="ai_quick_question_weights">¿Qué significan los pesos de los filtros?</string>

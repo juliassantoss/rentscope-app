@@ -20,12 +20,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -336,6 +338,7 @@ fun MapScreen(
                 selectedMunicipalityState.value?.let { municipality ->
                     MunicipalityTooltipCard(
                         item = municipality,
+                        onClose = { selectedMunicipalityState.value = null },
                         modifier = Modifier
                             .align(Alignment.TopStart)
                             .padding(12.dp)
@@ -594,6 +597,7 @@ private fun LegendPiorMelhor() {
 @Composable
 private fun MunicipalityTooltipCard(
     item: MunicipalityTooltipData,
+    onClose: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -602,22 +606,42 @@ private fun MunicipalityTooltipCard(
         colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.96f)),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(
-                text = item.name,
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold
-            )
+        Column(modifier = Modifier.padding(start = 12.dp, end = 4.dp, top = 8.dp, bottom = 12.dp)) {
+            // Linha superior: nome + botão de fechar (X) bem visível no canto.
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Top
+            ) {
+                Column(modifier = Modifier.weight(1f).padding(top = 4.dp)) {
+                    Text(
+                        text = item.name,
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold
+                    )
 
-            Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.height(4.dp))
 
-            Text(
-                text = item.area ?: "-",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+                    Text(
+                        text = item.area ?: "—",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
 
-            Spacer(Modifier.height(10.dp))
+                IconButton(
+                    onClick = onClose,
+                    modifier = Modifier.size(28.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Close,
+                        contentDescription = stringResource(R.string.close),
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(8.dp))
 
             TooltipMetricRow(
                 label = stringResource(R.string.crime_label_short),

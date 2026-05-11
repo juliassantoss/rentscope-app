@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ShowChart
+import androidx.compose.material.icons.filled.PriceChange
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -103,7 +103,7 @@ fun PriceHistoryScreen(
         ScreenHeader(
             title = stringResource(R.string.price_history),
             subtitle = stringResource(R.string.price_history_subtitle),
-            icon = Icons.AutoMirrored.Filled.ShowChart
+            icon = Icons.Filled.PriceChange
         )
 
         Spacer(modifier = Modifier.height(16.dp))

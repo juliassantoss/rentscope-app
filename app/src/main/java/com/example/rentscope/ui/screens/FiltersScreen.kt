@@ -9,20 +9,28 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -37,6 +45,21 @@ import java.util.Locale
 private val BrandBlue = Color(0xFF2F86D6)
 private val DeepBlue = Color(0xFF006D8F)
 
+/**
+ * Tela de configuração de filtros (pesos).
+ *
+ * Esta versão simplifica a UX: removeu-se a entrada de "Renda mínima" e
+ * "Renda máxima" porque misturavam-se o conceito de filtro (intervalo) com o
+ * conceito de score (peso). Agora apenas existem os 4 pesos das dimensões
+ * (renda, escolas, hospitais, criminalidade), todos com a mesma escala
+ * 0–3 e o mesmo significado de importância. Cada peso tem um ícone (i) que
+ * abre um diálogo com a explicação detalhada do que o filtro mede.
+ *
+ * **Compatibilidade**: a callback continua a expor `rendaMin`/`rendaMax` para
+ * que o resto do app (rotas, ViewModels, repositórios) não tenha de mudar;
+ * passamos `null` em ambos. O cálculo do score interpreta esse `null` como
+ * "ordenar por renda inversa" (renda mais baixa = melhor).
+ */
 @Composable
 fun FiltersScreen(
     padding: PaddingValues,
@@ -49,20 +72,28 @@ fun FiltersScreen(
     initialPesoHospitais: Float = 1f,
     initialPesoCriminalidade: Float = 1f,
     onSaveClick: (
-        rendaMin: Float,
-        rendaMax: Float,
+        rendaMin: Float?,
+        rendaMax: Float?,
         pesoRenda: Float,
         pesoEscolas: Float,
         pesoHospitais: Float,
         pesoCriminalidade: Float
     ) -> Unit
 ) {
-    var rendaMin by remember { mutableFloatStateOf(initialRendaMin) }
-    var rendaMax by remember { mutableFloatStateOf(initialRendaMax) }
+    @Suppress("UNUSED_PARAMETER")
+    val unusedCountryCode = countryCode
+    @Suppress("UNUSED_PARAMETER")
+    val unusedInitialRendaMin = initialRendaMin
+    @Suppress("UNUSED_PARAMETER")
+    val unusedInitialRendaMax = initialRendaMax
+
     var pesoRenda by remember { mutableFloatStateOf(initialPesoRenda) }
     var pesoEscolas by remember { mutableFloatStateOf(initialPesoEscolas) }
     var pesoHospitais by remember { mutableFloatStateOf(initialPesoHospitais) }
     var pesoCriminalidade by remember { mutableFloatStateOf(initialPesoCriminalidade) }
+
+    var dialogTitleRes by remember { mutableStateOf<Int?>(null) }
+    var dialogBodyRes by remember { mutableStateOf<Int?>(null) }
 
     Column(
         modifier = Modifier
@@ -73,108 +104,65 @@ fun FiltersScreen(
     ) {
         HeaderCard(countryName = countryName)
 
-        Spacer(Modifier.height(12.dp))
-
-        ScaleInfoCard()
-
         Spacer(Modifier.height(14.dp))
-
-        SliderCard(
-            title = stringResource(R.string.rent_min_title),
-            valueText = "${formatScale(rendaMin)}/20",
-            subtitle = stringResource(R.string.rent_min_subtitle),
-            value = rendaMin,
-            onValueChange = {
-                rendaMin = it
-                if (rendaMax < it) rendaMax = it
-            },
-            range = 0f..20f,
-            steps = 19,
-            minLabel = "0",
-            maxLabel = "20"
-        )
-
-        Spacer(Modifier.height(12.dp))
-
-        SliderCard(
-            title = stringResource(R.string.rent_max_title),
-            valueText = "${formatScale(rendaMax)}/20",
-            subtitle = stringResource(R.string.rent_max_subtitle),
-            value = rendaMax,
-            onValueChange = {
-                rendaMax = it.coerceAtLeast(rendaMin)
-            },
-            range = 0f..20f,
-            steps = 19,
-            minLabel = "0",
-            maxLabel = "20"
-        )
-
-        Spacer(Modifier.height(18.dp))
 
         SectionTitle(stringResource(R.string.filters_weights_title))
 
         Spacer(Modifier.height(10.dp))
 
-        SliderCard(
+        WeightSliderCard(
             title = stringResource(R.string.weight_rent_title),
-            valueText = format1(pesoRenda),
             subtitle = stringResource(R.string.weight_rent_subtitle),
             value = pesoRenda,
             onValueChange = { pesoRenda = it },
-            range = 0f..3f,
-            steps = 5,
-            minLabel = "0",
-            maxLabel = "3"
+            onInfoClick = {
+                dialogTitleRes = R.string.weight_rent_info_title
+                dialogBodyRes = R.string.weight_rent_info_body
+            }
         )
 
         Spacer(Modifier.height(12.dp))
 
-        SliderCard(
+        WeightSliderCard(
             title = stringResource(R.string.weight_schools_title),
-            valueText = format1(pesoEscolas),
             subtitle = stringResource(R.string.weight_schools_subtitle),
             value = pesoEscolas,
             onValueChange = { pesoEscolas = it },
-            range = 0f..3f,
-            steps = 5,
-            minLabel = "0",
-            maxLabel = "3"
+            onInfoClick = {
+                dialogTitleRes = R.string.weight_schools_info_title
+                dialogBodyRes = R.string.weight_schools_info_body
+            }
         )
 
         Spacer(Modifier.height(12.dp))
 
-        SliderCard(
+        WeightSliderCard(
             title = stringResource(R.string.weight_hospitals_title),
-            valueText = format1(pesoHospitais),
             subtitle = stringResource(R.string.weight_hospitals_subtitle),
             value = pesoHospitais,
             onValueChange = { pesoHospitais = it },
-            range = 0f..3f,
-            steps = 5,
-            minLabel = "0",
-            maxLabel = "3"
+            onInfoClick = {
+                dialogTitleRes = R.string.weight_hospitals_info_title
+                dialogBodyRes = R.string.weight_hospitals_info_body
+            }
         )
 
         Spacer(Modifier.height(12.dp))
 
-        SliderCard(
+        WeightSliderCard(
             title = stringResource(R.string.weight_crime_title),
-            valueText = format1(pesoCriminalidade),
             subtitle = stringResource(R.string.weight_crime_subtitle),
             value = pesoCriminalidade,
             onValueChange = { pesoCriminalidade = it },
-            range = 0f..3f,
-            steps = 5,
-            minLabel = "0",
-            maxLabel = "3"
+            onInfoClick = {
+                dialogTitleRes = R.string.weight_crime_info_title
+                dialogBodyRes = R.string.weight_crime_info_body
+            }
         )
 
         Spacer(Modifier.height(18.dp))
 
         SummaryCard(
-            rendaMin = rendaMin,
-            rendaMax = rendaMax,
             pesoRenda = pesoRenda,
             pesoEscolas = pesoEscolas,
             pesoHospitais = pesoHospitais,
@@ -185,9 +173,11 @@ fun FiltersScreen(
 
         Button(
             onClick = {
+                // rendaMin/rendaMax ficam null para que o cálculo do score
+                // use o modo inverso normalizado (renda mais baixa = melhor).
                 onSaveClick(
-                    rendaMin,
-                    rendaMax,
+                    null,
+                    null,
                     pesoRenda,
                     pesoEscolas,
                     pesoHospitais,
@@ -206,6 +196,32 @@ fun FiltersScreen(
         }
 
         Spacer(Modifier.height(28.dp))
+    }
+
+    val titleRes = dialogTitleRes
+    val bodyRes = dialogBodyRes
+    if (titleRes != null && bodyRes != null) {
+        AlertDialog(
+            onDismissRequest = {
+                dialogTitleRes = null
+                dialogBodyRes = null
+            },
+            title = { Text(stringResource(titleRes)) },
+            text = {
+                Text(
+                    text = stringResource(bodyRes),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    dialogTitleRes = null
+                    dialogBodyRes = null
+                }) {
+                    Text(stringResource(R.string.info_dialog_close))
+                }
+            }
+        )
     }
 }
 
@@ -234,31 +250,6 @@ private fun HeaderCard(countryName: String) {
 }
 
 @Composable
-private fun ScaleInfoCard() {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFEAF7FB)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        Column(Modifier.padding(14.dp)) {
-            Text(
-                text = stringResource(R.string.rent_scale_title),
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold,
-                color = DeepBlue
-            )
-            Spacer(Modifier.height(4.dp))
-            Text(
-                text = stringResource(R.string.rent_scale_body),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-    }
-}
-
-@Composable
 private fun SectionTitle(text: String) {
     Text(
         text = text,
@@ -269,8 +260,6 @@ private fun SectionTitle(text: String) {
 
 @Composable
 private fun SummaryCard(
-    rendaMin: Float,
-    rendaMax: Float,
     pesoRenda: Float,
     pesoEscolas: Float,
     pesoHospitais: Float,
@@ -293,17 +282,6 @@ private fun SummaryCard(
 
             Text(
                 text = stringResource(
-                    R.string.filters_summary_rent,
-                    format1(rendaMin),
-                    format1(rendaMax)
-                ),
-                style = MaterialTheme.typography.bodyMedium
-            )
-
-            Spacer(Modifier.height(4.dp))
-
-            Text(
-                text = stringResource(
                     R.string.filters_summary_weights,
                     format1(pesoRenda),
                     format1(pesoEscolas),
@@ -317,16 +295,12 @@ private fun SummaryCard(
 }
 
 @Composable
-private fun SliderCard(
+private fun WeightSliderCard(
     title: String,
-    valueText: String,
     subtitle: String,
     value: Float,
     onValueChange: (Float) -> Unit,
-    range: ClosedFloatingPointRange<Float>,
-    steps: Int,
-    minLabel: String,
-    maxLabel: String
+    onInfoClick: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -341,12 +315,26 @@ private fun SliderCard(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Column(Modifier.weight(1f)) {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(Modifier.height(5.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        IconButton(
+                            onClick = onInfoClick,
+                            modifier = Modifier.size(28.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Info,
+                                contentDescription = stringResource(R.string.info_action),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    }
+
                     Text(
                         text = subtitle,
                         style = MaterialTheme.typography.bodySmall,
@@ -360,7 +348,7 @@ private fun SliderCard(
                     contentColor = BrandBlue
                 ) {
                     Text(
-                        text = valueText,
+                        text = format1(value),
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold
@@ -373,8 +361,8 @@ private fun SliderCard(
             Slider(
                 value = value,
                 onValueChange = onValueChange,
-                valueRange = range,
-                steps = steps,
+                valueRange = 0f..3f,
+                steps = 5,
                 colors = SliderDefaults.colors(
                     thumbColor = DeepBlue,
                     activeTrackColor = DeepBlue,
@@ -387,12 +375,12 @@ private fun SliderCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = minLabel,
+                    text = "0",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = maxLabel,
+                    text = "3",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -402,12 +390,3 @@ private fun SliderCard(
 }
 
 private fun format1(value: Float): String = String.format(Locale.US, "%.1f", value)
-
-private fun formatScale(value: Float): String {
-    val rounded = value.toInt()
-    return if (value == rounded.toFloat()) {
-        rounded.toString()
-    } else {
-        format1(value)
-    }
-}

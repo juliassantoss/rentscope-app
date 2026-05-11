@@ -20,7 +20,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -44,7 +43,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.rentscope.R
 import com.example.rentscope.ui.components.MascotOrb
@@ -107,23 +105,14 @@ fun LoginScreen(
 
                 Spacer(Modifier.height(12.dp))
 
-                OutlinedTextField(
+                PasswordOutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
+                    label = stringResource(R.string.password_label),
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text(stringResource(R.string.password_label)) },
-                    leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = null) },
-                    singleLine = true,
                     enabled = !isLoading,
-                    shape = RoundedCornerShape(14.dp),
-                    visualTransformation = PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = { onLoginClick(email.trim(), password) }
-                    )
+                    imeAction = ImeAction.Done,
+                    onImeDone = { onLoginClick(email.trim(), password) }
                 )
 
                 if (!errorMessage.isNullOrBlank()) {

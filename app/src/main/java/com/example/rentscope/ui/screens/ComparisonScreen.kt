@@ -1,7 +1,7 @@
 package com.example.rentscope.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -9,27 +9,38 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.CompareArrows
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -43,25 +54,19 @@ import com.example.rentscope.ui.viewmodel.ScoreViewModel
 import java.util.Locale
 
 /**
- * Renders a side-by-side locality comparison using the current search context.
+ * Tela de comparação multi-localidade.
  *
- * @param padding Insets provided by the app scaffold.
- * @param vm View model that exposes the comparison dataset.
+ * O utilizador pesquisa por nome do município, marca cada localidade
+ * pretendida (sem limite teórico, embora o ideal seja 2 a 4) e a
+ * comparação dos cartões aparece automaticamente abaixo, em coluna,
+ * mantendo o mesmo formato visual que existia para a comparação 1-1.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ComparisonScreen(
     padding: PaddingValues,
     vm: ScoreViewModel = viewModel()
 ) {
     val lastSearch = LastSearchManager.get()
-
-    var leftExpanded by remember { mutableStateOf(false) }
-    var rightExpanded by remember { mutableStateOf(false) }
-    var leftQuery by rememberSaveable { mutableStateOf("") }
-    var rightQuery by rememberSaveable { mutableStateOf("") }
-    var leftSelected by remember { mutableStateOf<ScoreMunicipioDto?>(null) }
-    var rightSelected by remember { mutableStateOf<ScoreMunicipioDto?>(null) }
 
     val municipios = remember(vm.municipios) {
         vm.municipios.sortedWith(
@@ -70,29 +75,8 @@ fun ComparisonScreen(
         )
     }
 
-    val leftOptions = remember(municipios, leftQuery, rightSelected?.codigoMunicipio) {
-        municipios
-            .asSequence()
-            .filter { it.codigoMunicipio != rightSelected?.codigoMunicipio }
-            .filter {
-                leftQuery.isBlank() ||
-                    it.municipioLocalidade.contains(leftQuery, ignoreCase = true)
-            }
-            .take(40)
-            .toList()
-    }
-
-    val rightOptions = remember(municipios, rightQuery, leftSelected?.codigoMunicipio) {
-        municipios
-            .asSequence()
-            .filter { it.codigoMunicipio != leftSelected?.codigoMunicipio }
-            .filter {
-                rightQuery.isBlank() ||
-                    it.municipioLocalidade.contains(rightQuery, ignoreCase = true)
-            }
-            .take(40)
-            .toList()
-    }
+    var searchQuery by rememberSaveable { mutableStateOf("") }
+    val selectedCodes = remember { mutableStateListOf<Int>() }
 
     LaunchedEffect(
         lastSearch?.countryCode,
@@ -116,34 +100,27 @@ fun ComparisonScreen(
         }
     }
 
+    // Limpa seleções de municípios que já não estão nos dados (ex: nova busca filtra fora).
     LaunchedEffect(municipios) {
-        if (municipios.isEmpty()) {
-            leftSelected = null
-            rightSelected = null
-            return@LaunchedEffect
-        }
-
-        val preservedLeft = municipios.firstOrNull {
-            it.codigoMunicipio == leftSelected?.codigoMunicipio
-        } ?: municipios.firstOrNull()
-
-        val preservedRight = municipios.firstOrNull {
-            it.codigoMunicipio == rightSelected?.codigoMunicipio &&
-                it.codigoMunicipio != preservedLeft?.codigoMunicipio
-        } ?: municipios.firstOrNull {
-            it.codigoMunicipio != preservedLeft?.codigoMunicipio
-        }
-
-        leftSelected = preservedLeft
-        rightSelected = preservedRight
+        val validCodes = municipios.map { it.codigoMunicipio }.toSet()
+        selectedCodes.retainAll(validCodes)
     }
 
-    LaunchedEffect(leftSelected?.codigoMunicipio) {
-        leftQuery = leftSelected?.municipioLocalidade.orEmpty()
+    val selectedItems by remember(municipios, selectedCodes.toList()) {
+        derivedStateOf {
+            municipios.filter { it.codigoMunicipio in selectedCodes }
+        }
     }
 
-    LaunchedEffect(rightSelected?.codigoMunicipio) {
-        rightQuery = rightSelected?.municipioLocalidade.orEmpty()
+    val filteredOptions = remember(municipios, searchQuery) {
+        val q = searchQuery.trim()
+        if (q.isBlank()) {
+            municipios
+        } else {
+            municipios.filter {
+                it.municipioLocalidade.contains(q, ignoreCase = true)
+            }
+        }
     }
 
     Column(
@@ -182,9 +159,7 @@ fun ComparisonScreen(
                     title = stringResource(R.string.comparison_loading_title),
                     message = stringResource(R.string.comparison_loading_message)
                 )
-
                 Spacer(modifier = Modifier.height(12.dp))
-
                 ComparisonLoadingContent()
             }
 
@@ -202,53 +177,182 @@ fun ComparisonScreen(
                 )
             }
 
-            leftSelected == null || rightSelected == null -> {
-                EmptyStateCard(
-                    title = stringResource(R.string.no_data_title),
-                    message = stringResource(R.string.comparison_not_enough_message)
-                )
-            }
-
             else -> {
-                ComparisonSelectorsCard(
-                    leftLabel = stringResource(R.string.comparison_select_left),
-                    rightLabel = stringResource(R.string.comparison_select_right),
-                    leftQuery = leftQuery,
-                    onLeftQueryChange = {
-                        leftQuery = it
-                        leftExpanded = true
+                LocalitySelectorCard(
+                    searchQuery = searchQuery,
+                    onSearchQueryChange = { searchQuery = it },
+                    options = filteredOptions,
+                    selectedCodes = selectedCodes,
+                    onToggleSelect = { code ->
+                        if (code in selectedCodes) selectedCodes.remove(code)
+                        else selectedCodes.add(code)
                     },
-                    rightQuery = rightQuery,
-                    onRightQueryChange = {
-                        rightQuery = it
-                        rightExpanded = true
-                    },
-                    leftExpanded = leftExpanded,
-                    onLeftExpandedChange = { leftExpanded = it },
-                    rightExpanded = rightExpanded,
-                    onRightExpandedChange = { rightExpanded = it },
-                    leftOptions = leftOptions,
-                    rightOptions = rightOptions,
-                    onLeftSelect = { municipio ->
-                        leftSelected = municipio
-                        leftExpanded = false
-                    },
-                    onRightSelect = { municipio ->
-                        rightSelected = municipio
-                        rightExpanded = false
-                    }
+                    onClearSelection = { selectedCodes.clear() },
+                    selectedCount = selectedCodes.size
                 )
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                ComparisonCardsLayout(
-                    leftItem = leftSelected!!,
-                    rightItem = rightSelected!!
-                )
+                if (selectedItems.size < 2) {
+                    EmptyStateCard(
+                        title = stringResource(R.string.no_data_title),
+                        message = stringResource(R.string.comparison_min_two_required)
+                    )
+                } else {
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        selectedItems.forEach { item ->
+                            ComparisonLocalityCard(
+                                title = item.municipioLocalidade,
+                                item = item,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    }
+                }
             }
         }
 
         Spacer(modifier = Modifier.height(20.dp))
+    }
+}
+
+@Composable
+private fun LocalitySelectorCard(
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
+    options: List<ScoreMunicipioDto>,
+    selectedCodes: List<Int>,
+    onToggleSelect: (Int) -> Unit,
+    onClearSelection: () -> Unit,
+    selectedCount: Int
+) {
+    SectionCard {
+        Text(
+            text = stringResource(R.string.comparison_pick_localities),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Text(
+            text = stringResource(R.string.comparison_pick_helper),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = onSearchQueryChange,
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = { Text(stringResource(R.string.comparison_search_placeholder)) },
+            leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
+            singleLine = true,
+            shape = RoundedCornerShape(12.dp)
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.comparison_selected_count, selectedCount),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            if (selectedCount > 0) {
+                TextButton(onClick = onClearSelection) {
+                    Text(stringResource(R.string.comparison_clear_selection))
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        // Lista limitada em altura para não dominar o ecrã. O utilizador
+        // pode scrollar dentro deste bloco enquanto a comparação fica visível
+        // imediatamente abaixo.
+        if (options.isEmpty()) {
+            Text(
+                text = stringResource(R.string.comparison_no_matches),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(vertical = 12.dp)
+            )
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 280.dp)
+            ) {
+                items(options, key = { it.codigoMunicipio }) { municipio ->
+                    LocalityRow(
+                        item = municipio,
+                        checked = municipio.codigoMunicipio in selectedCodes,
+                        onToggle = { onToggleSelect(municipio.codigoMunicipio) }
+                    )
+                    HorizontalDivider(
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun LocalityRow(
+    item: ScoreMunicipioDto,
+    checked: Boolean,
+    onToggle: () -> Unit
+) {
+    Surface(
+        onClick = onToggle,
+        color = Color.Transparent,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Checkbox(
+                checked = checked,
+                onCheckedChange = { onToggle() }
+            )
+            Spacer(modifier = Modifier.size(4.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = item.municipioLocalidade,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = buildAreaSummary(item),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            Box(modifier = Modifier.padding(end = 4.dp)) {
+                Text(
+                    text = format1(item.score),
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
     }
 }
 
@@ -283,171 +387,6 @@ private fun ComparisonLoadingContent() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun ComparisonSelectorsCard(
-    leftLabel: String,
-    rightLabel: String,
-    leftQuery: String,
-    onLeftQueryChange: (String) -> Unit,
-    rightQuery: String,
-    onRightQueryChange: (String) -> Unit,
-    leftExpanded: Boolean,
-    onLeftExpandedChange: (Boolean) -> Unit,
-    rightExpanded: Boolean,
-    onRightExpandedChange: (Boolean) -> Unit,
-    leftOptions: List<ScoreMunicipioDto>,
-    rightOptions: List<ScoreMunicipioDto>,
-    onLeftSelect: (ScoreMunicipioDto) -> Unit,
-    onRightSelect: (ScoreMunicipioDto) -> Unit
-) {
-    SectionCard {
-        Text(
-            text = stringResource(R.string.comparison_selectors_title),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(4.dp))
-
-        Text(
-            text = stringResource(R.string.comparison_selectors_message),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Spacer(modifier = Modifier.height(14.dp))
-
-        LocalitySelectorField(
-            label = leftLabel,
-            query = leftQuery,
-            onQueryChange = onLeftQueryChange,
-            expanded = leftExpanded,
-            onExpandedChange = onLeftExpandedChange,
-            options = leftOptions,
-            onSelect = onLeftSelect
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        LocalitySelectorField(
-            label = rightLabel,
-            query = rightQuery,
-            onQueryChange = onRightQueryChange,
-            expanded = rightExpanded,
-            onExpandedChange = onRightExpandedChange,
-            options = rightOptions,
-            onSelect = onRightSelect
-        )
-    }
-}
-
-@Composable
-private fun ComparisonCardsLayout(
-    leftItem: ScoreMunicipioDto,
-    rightItem: ScoreMunicipioDto
-) {
-    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-        val compactLayout = maxWidth < 600.dp
-
-        if (compactLayout) {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                ComparisonLocalityCard(
-                    title = stringResource(R.string.comparison_select_left),
-                    item = leftItem,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                ComparisonLocalityCard(
-                    title = stringResource(R.string.comparison_select_right),
-                    item = rightItem,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        } else {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                ComparisonLocalityCard(
-                    title = stringResource(R.string.comparison_select_left),
-                    item = leftItem,
-                    modifier = Modifier.weight(1f)
-                )
-                ComparisonLocalityCard(
-                    title = stringResource(R.string.comparison_select_right),
-                    item = rightItem,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun LocalitySelectorField(
-    label: String,
-    query: String,
-    onQueryChange: (String) -> Unit,
-    expanded: Boolean,
-    onExpandedChange: (Boolean) -> Unit,
-    options: List<ScoreMunicipioDto>,
-    onSelect: (ScoreMunicipioDto) -> Unit
-) {
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = onExpandedChange
-    ) {
-        OutlinedTextField(
-            value = query,
-            onValueChange = onQueryChange,
-            modifier = Modifier
-                .menuAnchor()
-                .fillMaxWidth(),
-            label = { Text(label) },
-            placeholder = { Text(stringResource(R.string.comparison_search_placeholder)) },
-            singleLine = true,
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-            }
-        )
-
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { onExpandedChange(false) }
-        ) {
-            if (options.isEmpty()) {
-                DropdownMenuItem(
-                    text = { Text(stringResource(R.string.comparison_no_matches)) },
-                    onClick = { onExpandedChange(false) }
-                )
-            } else {
-                options.forEach { municipio ->
-                    DropdownMenuItem(
-                        text = {
-                            Column {
-                                Text(
-                                    text = municipio.municipioLocalidade,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Medium
-                                )
-                                Text(
-                                    text = buildAreaSummary(municipio),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                        },
-                        onClick = { onSelect(municipio) }
-                    )
-                }
-            }
-        }
-    }
-}
-
 @Composable
 private fun ComparisonLocalityCard(
     title: String,
@@ -457,14 +396,6 @@ private fun ComparisonLocalityCard(
     SectionCard(modifier = modifier, contentPadding = PaddingValues(16.dp)) {
         Text(
             text = title,
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = item.municipioLocalidade,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             maxLines = 2,
@@ -526,11 +457,11 @@ private fun buildAreaSummary(item: ScoreMunicipioDto): String {
         item.regiao?.takeIf { it.isNotBlank() },
         item.grandeRegiao?.takeIf { it.isNotBlank() }
     )
-    return if (parts.isEmpty()) "-" else parts.joinToString(" / ")
+    return if (parts.isEmpty()) "—" else parts.joinToString(" / ")
 }
 
 private fun format1(value: Float): String = String.format(Locale.getDefault(), "%.1f", value)
 
 private fun formatPricePerSquareMeter(value: Float?): String {
-    return value?.let { String.format(Locale.getDefault(), "%.1f €/m²", it) } ?: "-"
+    return value?.let { String.format(Locale.getDefault(), "%.1f €/m²", it) } ?: "—"
 }

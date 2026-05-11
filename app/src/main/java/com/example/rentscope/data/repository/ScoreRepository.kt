@@ -26,10 +26,14 @@ object ScoreRepository {
         limite: Int = 200
     ): Result<List<ScoreMunicipioDto>> {
         return try {
+            // Mantemos rendaMin/rendaMax como nullable: a UI nova já não os
+            // recolhe e o backend interpreta `null` como "ordenar por renda
+            // mais baixa = melhor". Compatível com chamadas legacy que ainda
+            // possam passar valores explícitos (histórico antigo).
             val request = ScoreFiltroRequestDto(
                 busca = busca ?: "",
-                renda_min = rendaMin ?: 0f,
-                renda_max = rendaMax ?: 20f,
+                renda_min = rendaMin,
+                renda_max = rendaMax,
                 peso_renda = pesoRenda,
                 peso_escolas = pesoEscolas,
                 peso_hospitais = pesoHospitais,

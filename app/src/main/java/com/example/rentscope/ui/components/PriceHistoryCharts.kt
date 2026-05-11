@@ -108,15 +108,34 @@ fun PriceHistoryChart(data: List<Pair<String, Float>>) {
                 setHighlightEnabled(true)
             }
 
+            // Estratégia para evitar labels apertados:
+            //  - granularity = 1 garante que o chart pode posicionar 1 label
+            //    por trimestre (precisão), mas...
+            //  - o formatter devolve "" para os índices que não pretendemos
+            //    mostrar. Mantemos apenas ~5 labels distribuídos uniformemente
+            //    no eixo X (primeiro, último e alguns intermédios), por isso
+            //    ficam confortavelmente espaçados.
+            //  - o utilizador continua a poder tocar em qualquer ponto da
+            //    linha para ver o trimestre exato + valor no marker que sobe.
+            val desiredVisibleLabels = 5
+            val step = max(1, ceil(labels.size.toFloat() / desiredVisibleLabels.toFloat()).toInt())
+            val lastIndex = labels.lastIndex
+
             chart.xAxis.valueFormatter = object : IndexAxisValueFormatter(labels) {
                 override fun getFormattedValue(value: Float): String {
                     val index = value.toInt()
-                    return if (index in labels.indices) labels[index] else ""
+                    if (index !in labels.indices) return ""
+                    // Sempre mostra primeiro e último para enquadrar o gráfico.
+                    if (index == 0 || index == lastIndex) return labels[index]
+                    // Para o resto, só a cada `step` trimestres.
+                    return if (index % step == 0) labels[index] else ""
                 }
             }
 
-            val labelCount = min(6, max(2, labels.size))
-            chart.xAxis.setLabelCount(labelCount, false)
+            // Pedimos ao chart espaço para todos os ticks (granularity=1),
+            // mas como o formatter devolve "" para muitos deles, só os
+            // selecionados aparecem visualmente.
+            chart.xAxis.setLabelCount(min(labels.size, 12), false)
 
             if (entries.isNotEmpty()) {
                 val minY = entries.minOf { it.y }
