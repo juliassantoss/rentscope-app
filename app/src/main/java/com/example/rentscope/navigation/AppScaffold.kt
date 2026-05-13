@@ -89,7 +89,18 @@ fun AppScaffold(
         navController.previousBackStackEntry != null
 
     var isLoggedIn by remember { mutableStateOf(false) }
+    var isDrawerReady by remember { mutableStateOf(false) }
     var userEmail by remember { mutableStateOf<String?>(null) }
+
+    // Garante que o drawer está fechado quando a app arranca. O truque do
+    // LayoutDirection.Rtl (para abrir do lado direito) faz com que o estado
+    // inicial Closed seja interpretado mal no primeiro frame e o drawer
+    // aparece aberto durante uma fração de segundo. snapTo força o close
+    // sem animação imediatamente.
+    LaunchedEffect(Unit) {
+        drawerState.snapTo(DrawerValue.Closed)
+        isDrawerReady = true
+    }
 
     LaunchedEffect(currentDestination) {
         TokenManager.init(context)
@@ -108,7 +119,8 @@ fun AppScaffold(
         }
     }
 
-    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+    if (isDrawerReady) {
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         ModalNavigationDrawer(
             drawerState = drawerState,
             gesturesEnabled = false,
@@ -322,6 +334,211 @@ fun AppScaffold(
                         }
                     }
                 }
+            }
+        }
+    }
+    } else {
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+            AppScaffoldContent(
+                navController = navController,
+                currentDestination = currentDestination,
+                isAuthRoute = isAuthRoute,
+                canGoBack = canGoBack,
+                onMenuClick = {},
+                content = content
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun AppScaffoldContent(
+    navController: NavController,
+    currentDestination: NavDestination?,
+    isAuthRoute: Boolean,
+    canGoBack: Boolean,
+    onMenuClick: () -> Unit,
+    content: @Composable (PaddingValues) -> Unit
+) {
+    Scaffold(
+        topBar = {
+            if (!isAuthRoute) {
+                TopAppBar(
+                    title = { Text(stringResource(R.string.app_title)) },
+                    navigationIcon = {
+                        // Lado esquerdo: apenas a seta de voltar quando aplicável.
+                        if (canGoBack) {
+                            IconButton(onClick = { navController.navigateUp() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = stringResource(R.string.back)
+                                )
+                            }
+                        }
+                    },
+                    actions = {
+                        // Lado direito (sempre): globo de idioma + menu hamburguer.
+                        IconButton(onClick = {
+                            navController.navigateSingleTopTo(Routes.LANGUAGE)
+                        }) {
+                            Icon(
+                                Icons.Filled.Language,
+                                contentDescription = stringResource(R.string.language)
+                            )
+                        }
+                        IconButton(onClick = onMenuClick) {
+                            Icon(
+                                Icons.Filled.Menu,
+                                contentDescription = stringResource(R.string.menu)
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = BrandBlue,
+                        titleContentColor = Color.White,
+                        navigationIconContentColor = Color.White,
+                        actionIconContentColor = Color.White
+                    )
+                )
+            }
+        },
+        bottomBar = {
+            if (!isAuthRoute) {
+                val itemColors = NavigationBarItemDefaults.colors(
+                    indicatorColor = BrandBlue.copy(alpha = 0.15f),
+                    selectedIconColor = Color.Black,
+                    selectedTextColor = Color.Black,
+                    unselectedIconColor = Color.Black,
+                    unselectedTextColor = Color.Black
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .navigationBarsPadding()
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.White.copy(alpha = 0.96f)
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 4.dp, vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // Resultados (esquerda)
+                            NavigationBarItem(
+                                modifier = Modifier.weight(1f),
+                                selected = currentDestination.isRouteSelected(Routes.RESULTS),
+                                onClick = { navController.navigateSingleTopTo(Routes.RESULTS) },
+                                icon = {
+                                    Icon(
+                                        Icons.Filled.Assessment,
+                                        contentDescription = stringResource(R.string.results),
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                },
+                                label = {
+                                    Text(
+                                        text = stringResource(R.string.results),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                },
+                                alwaysShowLabel = true,
+                                colors = itemColors
+                            )
+
+                            // Início (centro)
+                            NavigationBarItem(
+                                modifier = Modifier.weight(1f),
+                                selected = currentDestination.isRouteSelected(Routes.HOME),
+                                onClick = { navController.navigateSingleTopTo(Routes.HOME) },
+                                icon = {
+                                    Icon(
+                                        Icons.Filled.Home,
+                                        contentDescription = stringResource(R.string.home),
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                },
+                                label = {
+                                    Text(
+                                        text = stringResource(R.string.home),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                },
+                                alwaysShowLabel = true,
+                                colors = itemColors
+                            )
+
+                            // Histórico de Preços (direita) — label encurtada para
+                            // caber numa linha no bottom bar; o ícone (gráfico) e
+                            // o subtítulo da própria screen reforçam o significado.
+                            NavigationBarItem(
+                                modifier = Modifier.weight(1f),
+                                selected = currentDestination.isRouteSelected(Routes.PRICE_HISTORY),
+                                onClick = { navController.navigateSingleTopTo(Routes.PRICE_HISTORY) },
+                                icon = {
+                                    Icon(
+                                        Icons.Filled.PriceChange,
+                                        contentDescription = stringResource(R.string.price_history),
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                },
+                                label = {
+                                    Text(
+                                        text = stringResource(R.string.price_history_short),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                },
+                                alwaysShowLabel = true,
+                                colors = itemColors
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        containerColor = Color(0xFFEAF1F4)
+    ) { padding ->
+        if (isAuthRoute) {
+            // Auth screens (login/registo/forgot) não devem ter o
+            // mascote a interromper o fluxo crítico de credenciais.
+            content(padding)
+        } else {
+            // O `key` garante que o estado de inatividade/dismissed
+            // é reposto cada vez que o utilizador muda de ecrã.
+            // Excluímos:
+            //   - HOME: já tem o mascote grande no centro
+            //   - AI_ASSISTANT: é a própria conversa com o mascote
+            //   - mapa: já tem o mascote integrado no canto
+            val routeKey = currentDestination?.route.orEmpty()
+            val showIdlePrompt = routeKey.isNotBlank() &&
+                routeKey != Routes.HOME &&
+                !routeKey.startsWith(Routes.AI_ASSISTANT) &&
+                !routeKey.startsWith("map/")
+
+            if (showIdlePrompt) {
+                key(routeKey) {
+                    IdleMascotPrompt(
+                        onOpenAssistant = {
+                            navController.navigateSingleTopTo(Routes.AI_ASSISTANT)
+                        }
+                    ) {
+                        content(padding)
+                    }
+                }
+            } else {
+                content(padding)
             }
         }
     }

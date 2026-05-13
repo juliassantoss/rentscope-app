@@ -55,7 +55,7 @@ fun AppDrawer(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
+                .background(    
                     Brush.verticalGradient(
                         listOf(
                             Color(0xFF3F8EDC),
