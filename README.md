@@ -21,12 +21,8 @@ The application processes public datasets, calculates a personalized score for e
   </tr>
 </table>
 
-## Live Demo
+## Swagger Documentation
 
-Backend API:
-https://rentscope-api-w1b7.onrender.com
-
-Swagger Documentation:
 https://rentscope-api-w1b7.onrender.com/docs
 
 
@@ -144,6 +140,3 @@ Júlia Santos
 Bachelor's Degree in Computer Engineering  
 Universidade Lusófona – Centro Universitário do Porto
 
-## License
-
-This project was developed for academic purposes as part of a final-year Computer Engineering project.
